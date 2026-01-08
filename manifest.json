@@ -2,7 +2,7 @@
   "name": "Open LCS Scrims Manager",
   "short_name": "LCS Scrims",
   "description": "Gestor de puntos para torneos de E-Sports",
-  "start_url": "./Scrims.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f7f9fb",
   "theme_color": "#4f46e5",
@@ -16,3 +16,4 @@
   ]
 
 }
+
