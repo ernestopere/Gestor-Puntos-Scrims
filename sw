@@ -1,5 +1,5 @@
 const CACHE_NAME = 'v1_lcs_scrims';
-const urlsToCache = ['./', './index.html'];
+const urlsToCache = ['./', './Scrims.html'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -11,4 +11,5 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     caches.match(e.request).then(res => res || fetch(e.request))
   );
+
 });
