@@ -2,11 +2,13 @@
 <html lang="es">
 <head>
     <link rel="manifest" href="./manifest.json">
+  <!DOCTYPE html>
+<html lang="es">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tournament Master - OPEN LCS</title>
+    <title>Tournament Master - E-Sports System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
         
@@ -14,155 +16,204 @@
             font-family: 'Outfit', sans-serif; 
             background-color: #0f172a; 
             color: #f8fafc;
-            margin: 0;
+            min-height: screen;
             padding: 20px;
         }
 
-        /* Estilo Glassmorphism de la imagen */
-        .glass-card { 
-            background: rgba(30, 41, 59, 0.4); 
+        /* Estilo de Contenedores Principales */
+        .main-card { 
+            background: rgba(30, 41, 59, 0.5); 
             backdrop-filter: blur(10px); 
             border: 1px solid rgba(255, 255, 255, 0.05); 
             border-radius: 24px;
         }
 
-        .input-dark {
-            background: rgba(15, 23, 42, 0.6);
+        /* Inputs Estilo Imagen */
+        .input-field {
+            background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
             border-radius: 12px;
+            padding: 1rem;
+            width: 100%;
             transition: all 0.2s;
         }
 
-        .input-dark:focus {
-            border-color: #6366f1;
+        .input-field:focus {
+            border-color: #3b82f6;
             outline: none;
-            background: rgba(15, 23, 42, 0.9);
         }
 
-        /* Colores exactos de la imagen */
-        .text-accent-blue { color: #818cf8; }
-        .text-accent-cyan { color: #22d3ee; }
-        .text-accent-yellow { color: #fbbf24; }
-        .border-accent-yellow { border: 1px solid rgba(251, 191, 36, 0.5); }
+        /* Colores de Acento */
+        .text-cyan-accent { color: #22d3ee; }
+        .text-blue-accent { color: #818cf8; }
+        .text-yellow-accent { color: #fbbf24; }
+        .bg-blue-button { background-color: #2563eb; }
+        .bg-green-button { background-color: #10b981; }
+        
+        .stat-box {
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+        }
 
-        .table-container::-webkit-scrollbar { height: 6px; }
-        .table-container::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .leader-box {
+            border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        /* Scrollbar Personalizada */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center">
 
-    <div id="app" class="max-w-6xl mx-auto">
+    <header class="text-center mb-10">
+        <h1 class="text-5xl font-extrabold tracking-tight text-cyan-accent uppercase">Tournament Master</h1>
+        <p class="text-slate-400 text-sm tracking-widest mt-2 uppercase">E-Sports Management System</p>
+    </header>
+
+    <div id="app" class="w-full max-w-6xl">
         
-        <section id="setup-screen" class="glass-card p-8 animate__animated animate__fadeIn max-w-md mx-auto mt-10">
-            <h1 class="text-3xl font-extrabold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
-                CONFIGURACIÓN
-            </h1>
-            <div class="space-y-6">
+        <section id="setup-screen" class="main-card p-8 max-w-4xl mx-auto">
+            <div class="flex items-center gap-4 mb-8">
+                <div class="bg-blue-600 p-2 rounded-lg">⚙️</div>
+                <h2 class="text-2xl font-bold">Configuración General</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <div>
-                    <label class="block text-sm text-slate-400 mb-2">Equipos</label>
-                    <input type="number" id="num-teams" value="6" class="input-dark w-full p-4 text-xl">
+                    <label class="block text-slate-400 text-sm mb-3">Número de Equipos</label>
+                    <input type="number" id="num-teams" value="8" min="2" class="input-field text-xl font-bold">
                 </div>
                 <div>
-                    <label class="block text-sm text-slate-400 mb-2">Rondas</label>
-                    <input type="number" id="num-rounds" value="5" class="input-dark w-full p-4 text-xl">
+                    <label class="block text-slate-400 text-sm mb-3">Total de Rondas</label>
+                    <input type="number" id="num-rounds" value="5" min="1" class="input-field text-xl font-bold">
                 </div>
-                <button onclick="initApp()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition-all">
-                    Siguiente →
-                </button>
+            </div>
+
+            <button onclick="goToTeamNames()" class="w-full bg-blue-button hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all uppercase tracking-wide">
+                Configurar Equipos →
+            </button>
+        </section>
+
+        <section id="names-screen" class="hidden main-card p-8 max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold mb-8">Registrar Equipos</h2>
+            <div id="team-inputs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-h-[400px] overflow-y-auto pr-2">
+                </div>
+            <div class="flex gap-4">
+                <button onclick="showScreen('setup-screen')" class="flex-1 bg-slate-700 hover:bg-slate-600 font-bold py-4 rounded-xl">Atrás</button>
+                <button onclick="startTournament()" class="flex-[2] bg-green-button hover:bg-green-600 font-bold py-4 rounded-xl uppercase">¡Empezar Torneo!</button>
             </div>
         </section>
 
-        <section id="main-screen" class="hidden animate__animated animate__fadeIn space-y-6">
-            
+        <section id="main-screen" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="glass-card p-6 text-center">
-                    <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Ronda</p>
-                    <p id="stat-round" class="text-4xl font-bold text-accent-blue">1/5</p>
+                <div class="stat-box">
+                    <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Ronda</p>
+                    <p id="stat-round" class="text-4xl font-extrabold text-blue-accent">1/5</p>
                 </div>
-                <div class="glass-card p-6 text-center border-accent-yellow">
-                    <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Líder</p>
-                    <p id="stat-leader" class="text-4xl font-bold text-accent-yellow">---</p>
+                <div class="stat-box leader-box">
+                    <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Líder</p>
+                    <p id="stat-leader" class="text-4xl font-extrabold text-yellow-accent">---</p>
                 </div>
-                <div class="glass-card p-6 text-center">
-                    <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Restantes</p>
-                    <p id="stat-left" class="text-4xl font-bold text-accent-cyan">4</p>
+                <div class="stat-box">
+                    <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Restantes</p>
+                    <p id="stat-left" class="text-4xl font-extrabold text-cyan-accent">4</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                
-                <div class="lg:col-span-4 glass-card p-6">
-                    <h2 class="text-2xl font-bold mb-6">Resultados Ronda <span id="round-title" class="text-accent-blue">1</span></h2>
-                    <div id="inputs-container" class="space-y-4 mb-6">
+                <div class="lg:col-span-4 main-card p-6 border-l-4 border-blue-500">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Resultados Ronda</h2>
+                        <span id="round-num-indicator" class="text-2xl font-bold text-blue-accent">1</span>
+                    </div>
+                    <div id="round-entry-list" class="space-y-4 mb-6">
                         </div>
-                    <button onclick="processRound()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold transition">
-                        Confirmar Resultados
+                    <button onclick="processRound()" class="w-full bg-blue-button hover:bg-blue-700 py-4 rounded-xl font-bold uppercase transition">
+                        Confirmar Ronda
                     </button>
                 </div>
 
-                <div class="lg:col-span-8 glass-card p-6">
+                <div class="lg:col-span-8 main-card p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold">Clasificación General</h2>
-                        <button onclick="copyToClipboard()" class="bg-slate-700 hover:bg-slate-600 text-xs px-4 py-2 rounded-full transition">Copiar Tabla</button>
+                        <button onclick="copyTable()" class="bg-slate-700 hover:bg-slate-600 text-xs px-4 py-2 rounded-full font-bold">Copiar Tabla</button>
                     </div>
-                    <div class="overflow-hidden">
-                        <table class="w-full text-left">
-                            <thead class="text-slate-500 text-xs uppercase border-b border-slate-700">
-                                <tr>
-                                    <th class="pb-4 font-medium">Pos</th>
-                                    <th class="pb-4 font-medium">Equipo</th>
-                                    <th class="pb-4 font-medium text-right">Pts</th>
-                                </tr>
-                            </thead>
-                            <tbody id="leaderboard-body" class="divide-y divide-slate-800">
-                                </tbody>
-                        </table>
-                    </div>
+                    <table class="w-full text-left">
+                        <thead class="text-slate-500 text-xs uppercase border-b border-slate-800">
+                            <tr>
+                                <th class="pb-4">Pos</th>
+                                <th class="pb-4">Equipo</th>
+                                <th class="pb-4 text-right">Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body" class="divide-y divide-slate-800/50">
+                            </tbody>
+                    </table>
                 </div>
             </div>
-
-            <div class="text-center pt-4">
-                <button onclick="location.reload()" class="text-slate-500 hover:text-red-400 text-xs uppercase tracking-widest">Reiniciar Torneo</button>
+            
+            <div class="text-center opacity-50 hover:opacity-100 transition">
+                <button onclick="location.reload()" class="text-xs uppercase tracking-tighter">Finalizar y Reiniciar Todo</button>
             </div>
         </section>
     </div>
 
-    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300">
-        <div id="toast-msg" class="bg-red-500 text-white px-6 py-3 rounded-xl font-bold shadow-2xl"></div>
+    <div id="notification" class="fixed bottom-10 right-10 transform translate-y-20 opacity-0 transition-all duration-300">
+        <div id="notif-box" class="px-8 py-4 rounded-2xl font-bold shadow-2xl text-white"></div>
     </div>
 
     <script>
-        let state = {
-            numTeams: 0,
-            numRounds: 0,
+        let tournament = {
+            config: { teams: 0, rounds: 0 },
             currentRound: 1,
             teams: []
         };
 
-        const POS_POINTS = { 1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1 };
+        const POINTS_SYSTEM = { 1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1 };
 
-        function initApp() {
-            state.numTeams = parseInt(document.getElementById('num-teams').value);
-            state.numRounds = parseInt(document.getElementById('num-rounds').value);
-            
-            for(let i=1; i <= state.numTeams; i++) {
-                state.teams.push({ id: i, name: `Equipo ${i}`, score: 0 });
-            }
-
-            renderInputs();
-            updateDashboard();
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('main-screen').classList.remove('hidden');
+        function showScreen(id) {
+            ['setup-screen', 'names-screen', 'main-screen'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
         }
 
-        function renderInputs() {
-            const container = document.getElementById('inputs-container');
-            container.innerHTML = state.teams.map(t => `
-                <div class="flex items-center gap-4">
-                    <span class="flex-1 font-semibold text-slate-300">${t.name}</span>
-                    <input type="number" placeholder="Pos" data-team="${t.id}" class="pos-in input-dark w-20 p-2 text-center text-accent-blue font-bold">
-                    <input type="number" placeholder="Kills" data-team="${t.id}" class="kills-in input-dark w-20 p-2 text-center text-slate-400">
+        function goToTeamNames() {
+            tournament.config.teams = parseInt(document.getElementById('num-teams').value);
+            tournament.config.rounds = parseInt(document.getElementById('num-rounds').value);
+            
+            const grid = document.getElementById('team-inputs-grid');
+            grid.innerHTML = '';
+            for(let i=1; i <= tournament.config.teams; i++) {
+                grid.innerHTML += `
+                    <input type="text" placeholder="Nombre Equipo ${i}" class="input-field team-name-input" value="Equipo ${i}">
+                `;
+            }
+            showScreen('names-screen');
+        }
+
+        function startTournament() {
+            const nameInputs = document.querySelectorAll('.team-name-input');
+            tournament.teams = Array.from(nameInputs).map((input, idx) => ({
+                id: idx + 1,
+                name: input.value || `Equipo ${idx + 1}`,
+                score: 0
+            }));
+
+            updateUI();
+            renderRoundEntry();
+            showScreen('main-screen');
+        }
+
+        function renderRoundEntry() {
+            const list = document.getElementById('round-entry-list');
+            list.innerHTML = tournament.teams.map(t => `
+                <div class="flex items-center gap-3">
+                    <span class="flex-1 text-sm font-bold truncate">${t.name}</span>
+                    <input type="number" placeholder="Pos" data-id="${t.id}" class="pos-in input-field !p-2 w-16 text-center text-blue-accent font-bold">
+                    <input type="number" placeholder="Kills" data-id="${t.id}" class="kills-in input-field !p-2 w-16 text-center text-slate-400">
                 </div>
             `).join('');
         }
@@ -171,80 +222,74 @@
             const posInputs = document.querySelectorAll('.pos-in');
             const killInputs = document.querySelectorAll('.kills-in');
             const usedPos = new Set();
-            let roundData = [];
+            let updates = [];
 
-            // Validación estricta
             for(let i=0; i < posInputs.length; i++) {
                 const p = parseInt(posInputs[i].value);
                 const k = parseInt(killInputs[i].value || 0);
-                const teamId = parseInt(posInputs[i].dataset.team);
+                const id = parseInt(posInputs[i].dataset.id);
 
-                if(!p || p < 1 || p > state.numTeams) return notify(`Posición inválida para el Equipo ${teamId}`);
-                if(usedPos.has(p)) return notify(`La posición ${p} ya fue asignada`);
+                if(!p || p < 1 || p > tournament.config.teams) return notify(`Falta posición válida para equipo ${id}`);
+                if(usedPos.has(p)) return notify(`La posición ${p} está repetida`);
                 
                 usedPos.add(p);
-                roundData.push({ teamId, points: (POS_POINTS[p] || 0) + k });
+                updates.push({ id, pts: (POINTS_SYSTEM[p] || 0) + k });
             }
 
-            // Aplicar puntos
-            roundData.forEach(data => {
-                const team = state.teams.find(t => t.id === data.teamId);
-                team.score += data.points;
+            updates.forEach(upd => {
+                const team = tournament.teams.find(t => t.id === upd.id);
+                team.score += upd.pts;
             });
 
-            if(state.currentRound < state.numRounds) {
-                state.currentRound++;
-                notify("Ronda guardada con éxito", false);
-                updateDashboard();
-                // Limpiar campos
-                posInputs.forEach(i => i.value = "");
-                killInputs.forEach(i => i.value = "");
+            if(tournament.currentRound < tournament.config.rounds) {
+                tournament.currentRound++;
+                notify(`Ronda ${tournament.currentRound-1} registrada`, false);
+                updateUI();
+                renderRoundEntry();
             } else {
-                notify("¡Torneo Finalizado!", false);
-                updateDashboard();
-                document.getElementById('inputs-container').parentElement.innerHTML = `
+                updateUI();
+                document.getElementById('round-entry-list').parentElement.innerHTML = `
                     <div class="text-center py-10">
-                        <p class="text-5xl mb-4 text-accent-yellow">👑</p>
-                        <h3 class="text-xl font-bold">Torneo Concluido</h3>
-                    </div>`;
+                        <p class="text-6xl mb-4">🏆</p>
+                        <h2 class="text-2xl font-bold">Torneo Finalizado</h2>
+                    </div>
+                `;
             }
         }
 
-        function updateDashboard() {
-            // Actualizar Stats
-            document.getElementById('stat-round').textContent = `${state.currentRound}/${state.numRounds}`;
-            document.getElementById('stat-left').textContent = state.numRounds - state.currentRound;
-            document.getElementById('round-title').textContent = state.currentRound;
+        function updateUI() {
+            document.getElementById('stat-round').textContent = `${tournament.currentRound}/${tournament.config.rounds}`;
+            document.getElementById('stat-left').textContent = tournament.config.rounds - tournament.currentRound;
+            document.getElementById('round-num-indicator').textContent = tournament.currentRound;
 
-            // Ordenar y Renderizar Tabla
-            const sorted = [...state.teams].sort((a,b) => b.score - a.score);
+            const sorted = [...tournament.teams].sort((a,b) => b.score - a.score);
             document.getElementById('stat-leader').textContent = sorted[0].score > 0 ? sorted[0].name : "---";
 
             const body = document.getElementById('leaderboard-body');
             body.innerHTML = sorted.map((t, i) => `
-                <tr class="group">
-                    <td class="py-4 font-bold text-accent-blue">${i+1}</td>
-                    <td class="py-4 font-semibold text-slate-200">${t.name}</td>
-                    <td class="py-4 text-right font-bold text-accent-cyan">${t.score}</td>
+                <tr>
+                    <td class="py-4 font-bold text-blue-accent text-lg">${i+1}</td>
+                    <td class="py-4 font-bold text-white">${t.name}</td>
+                    <td class="py-4 text-right font-bold text-cyan-accent text-lg">${t.score}</td>
                 </tr>
             `).join('');
         }
 
-        function notify(msg, isError = true) {
-            const toast = document.getElementById('toast');
-            const msgEl = document.getElementById('toast-msg');
-            msgEl.textContent = msg;
-            msgEl.style.backgroundColor = isError ? "#ef4444" : "#10b981";
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        function notify(msg, error = true) {
+            const box = document.getElementById('notification');
+            const inner = document.getElementById('notif-box');
+            inner.textContent = msg;
+            inner.className = `px-8 py-4 rounded-2xl font-bold shadow-2xl text-white ${error ? 'bg-red-500' : 'bg-green-600'}`;
+            box.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => box.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
-        function copyToClipboard() {
-            const sorted = [...state.teams].sort((a,b) => b.score - a.score);
-            let text = "🏆 CLASIFICACIÓN GENERAL 🏆\n\n";
-            sorted.forEach((t, i) => text += `${i+1}. ${t.name} - ${t.score} PTS\n`);
-            navigator.clipboard.writeText(text);
-            notify("Copiado al portapapeles", false);
+        function copyTable() {
+            const sorted = [...tournament.teams].sort((a,b) => b.score - a.score);
+            let txt = "RANKING ACTUAL\n";
+            sorted.forEach((t, i) => txt += `${i+1}. ${t.name} - ${t.score} PTS\n`);
+            navigator.clipboard.writeText(txt);
+            notify("Tabla copiada al portapapeles", false);
         }
     </script>
 </body>
