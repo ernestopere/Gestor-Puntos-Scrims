@@ -4,285 +4,251 @@
     <link rel="manifest" href="./manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tournament Master - OPEN LCS SCRIMS</title>
+    <title>Tournament Master - OPEN LCS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
-        body { font-family: 'Outfit', sans-serif; background: #0f172a; color: #f8fafc; overflow-x: hidden; }
         
-        .glass-card { 
-            background: rgba(30, 41, 59, 0.7); 
-            backdrop-filter: blur(12px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #0f172a; 
+            color: #f8fafc;
+            margin: 0;
+            padding: 20px;
         }
-        
+
+        /* Estilo Glassmorphism de la imagen */
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.4); 
+            backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            border-radius: 24px;
+        }
+
         .input-dark {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid #334155;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
+            border-radius: 12px;
             transition: all 0.2s;
         }
-        .input-dark:focus { border-color: #6366f1; outline: none; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4); }
 
-        .table-container::-webkit-scrollbar { height: 8px; }
+        .input-dark:focus {
+            border-color: #6366f1;
+            outline: none;
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        /* Colores exactos de la imagen */
+        .text-accent-blue { color: #818cf8; }
+        .text-accent-cyan { color: #22d3ee; }
+        .text-accent-yellow { color: #fbbf24; }
+        .border-accent-yellow { border: 1px solid rgba(251, 191, 36, 0.5); }
+
+        .table-container::-webkit-scrollbar { height: 6px; }
         .table-container::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        
-        .gold-shadow { box-shadow: 0 0 20px rgba(234, 179, 8, 0.2); }
-        .sticky-col { position: sticky; left: 0; z-index: 10; background: #1e293b; }
     </style>
 </head>
-<body class="p-4 min-h-screen">
+<body>
 
-    <div id="app" class="max-w-6xl mx-auto py-8">
-        <header class="text-center mb-10 animate__animated animate__fadeInDown">
-            <h1 class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 mb-2">
-                OPEN LCS SCRIMS
+    <div id="app" class="max-w-6xl mx-auto">
+        
+        <section id="setup-screen" class="glass-card p-8 animate__animated animate__fadeIn max-w-md mx-auto mt-10">
+            <h1 class="text-3xl font-extrabold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
+                CONFIGURACIÓN
             </h1>
-            <p class="text-slate-400 uppercase tracking-widest text-sm font-bold">Tournament Management System</p>
-        </header>
-
-        <section id="setup-screen" class="glass-card p-8 rounded-3xl shadow-2xl animate__animated animate__fadeIn max-w-2xl mx-auto">
-            <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
-                <span class="bg-indigo-500 p-2 rounded-lg text-sm">01</span> Configuración Inicial
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="space-y-6">
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">Número de Equipos</label>
-                    <input type="number" id="num-teams" value="5" min="1" class="input-dark w-full p-4 rounded-xl text-xl">
+                    <label class="block text-sm text-slate-400 mb-2">Equipos</label>
+                    <input type="number" id="num-teams" value="6" class="input-dark w-full p-4 text-xl">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">Número de Rondas</label>
-                    <input type="number" id="num-rounds" value="3" min="1" class="input-dark w-full p-4 rounded-xl text-xl">
+                    <label class="block text-sm text-slate-400 mb-2">Rondas</label>
+                    <input type="number" id="num-rounds" value="5" class="input-dark w-full p-4 text-xl">
                 </div>
-            </div>
-            <button onclick="startTeamSetup()" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.01] active:scale-95 shadow-lg">
-                Siguiente: Nombres de Equipos →
-            </button>
-        </section>
-
-        <section id="names-screen" class="hidden glass-card p-8 rounded-3xl shadow-2xl animate__animated animate__fadeIn max-w-2xl mx-auto">
-            <h2 class="text-2xl font-bold mb-6">Registro de Participantes</h2>
-            <div id="team-name-inputs" class="grid grid-cols-1 gap-4 mb-8 max-h-[400px] overflow-y-auto pr-2"></div>
-            <div class="flex gap-4">
-                <button onclick="switchScreen('setup-screen')" class="flex-1 bg-slate-700 hover:bg-slate-600 py-4 rounded-xl font-bold transition">Atrás</button>
-                <button onclick="startRounds()" class="flex-[2] bg-green-600 hover:bg-green-500 py-4 rounded-xl font-bold transition">Comenzar Torneo</button>
+                <button onclick="initApp()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl transition-all">
+                    Siguiente →
+                </button>
             </div>
         </section>
 
-        <section id="rounds-screen" class="hidden space-y-8 animate__animated animate__fadeIn">
+        <section id="main-screen" class="hidden animate__animated animate__fadeIn space-y-6">
             
-            <div id="input-card" class="glass-card p-6 rounded-3xl border border-indigo-500/30">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <h2 class="text-2xl font-bold text-indigo-400">Entrada de Resultados</h2>
-                    <span class="text-xs bg-red-500/20 text-red-400 px-3 py-1 rounded-full border border-red-500/30 font-bold uppercase">Validación Estricta Activada</span>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-card p-6 text-center">
+                    <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Ronda</p>
+                    <p id="stat-round" class="text-4xl font-bold text-accent-blue">1/5</p>
                 </div>
-
-                <div class="table-container overflow-x-auto rounded-xl border border-slate-700">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-slate-800/50 text-slate-400 text-xs uppercase">
-                            <tr id="rounds-header-row"></tr>
-                        </thead>
-                        <tbody id="all-rounds-inputs-body" class="divide-y divide-slate-800"></tbody>
-                    </table>
+                <div class="glass-card p-6 text-center border-accent-yellow">
+                    <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Líder</p>
+                    <p id="stat-leader" class="text-4xl font-bold text-accent-yellow">---</p>
                 </div>
-
-                <button onclick="processAllRounds()" class="w-full mt-6 bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all">
-                    Finalizar y Calcular Scoreboard
-                </button>
-            </div>
-
-            <div id="finish-message" class="hidden animate__animated animate__bounceIn">
-                <div class="bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/40 p-6 rounded-2xl text-center">
-                    <h2 class="text-2xl font-bold text-yellow-400">🏆 Torneo Finalizado</h2>
-                    <p class="text-slate-300">Los resultados han sido bloqueados y registrados con éxito.</p>
+                <div class="glass-card p-6 text-center">
+                    <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Restantes</p>
+                    <p id="stat-left" class="text-4xl font-bold text-accent-cyan">4</p>
                 </div>
             </div>
 
-            <div class="glass-card p-6 rounded-3xl shadow-2xl">
-                <h2 class="text-2xl font-bold mb-6 flex justify-between items-center">
-                    Clasificación General
-                    <span class="text-sm font-normal text-slate-400">Ordenado por Puntos Totales</span>
-                </h2>
-                <div class="overflow-hidden rounded-xl border border-slate-700">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-slate-800 text-slate-400 text-xs uppercase font-bold">
-                            <tr>
-                                <th class="p-4">Pos</th>
-                                <th class="p-4">Equipo</th>
-                                <th class="p-4 text-right">Pts Posición</th>
-                                <th class="p-4 text-right">Kills</th>
-                                <th class="p-4 text-right text-indigo-400">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scoreboard-body" class="divide-y divide-slate-800"></tbody>
-                    </table>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <div class="lg:col-span-4 glass-card p-6">
+                    <h2 class="text-2xl font-bold mb-6">Resultados Ronda <span id="round-title" class="text-accent-blue">1</span></h2>
+                    <div id="inputs-container" class="space-y-4 mb-6">
+                        </div>
+                    <button onclick="processRound()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl font-bold transition">
+                        Confirmar Resultados
+                    </button>
+                </div>
+
+                <div class="lg:col-span-8 glass-card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Clasificación General</h2>
+                        <button onclick="copyToClipboard()" class="bg-slate-700 hover:bg-slate-600 text-xs px-4 py-2 rounded-full transition">Copiar Tabla</button>
+                    </div>
+                    <div class="overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="text-slate-500 text-xs uppercase border-b border-slate-700">
+                                <tr>
+                                    <th class="pb-4 font-medium">Pos</th>
+                                    <th class="pb-4 font-medium">Equipo</th>
+                                    <th class="pb-4 font-medium text-right">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body" class="divide-y divide-slate-800">
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <div id="reset-container" class="flex justify-center pt-4">
-                <button onclick="resetTournament()" class="flex items-center gap-2 text-slate-500 hover:text-red-400 transition font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Reiniciar Sistema
-                </button>
+            <div class="text-center pt-4">
+                <button onclick="location.reload()" class="text-slate-500 hover:text-red-400 text-xs uppercase tracking-widest">Reiniciar Torneo</button>
             </div>
         </section>
-
     </div>
 
-    <div id="notification" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50">
-        <div id="notif-content" class="px-6 py-3 rounded-2xl shadow-2xl font-bold text-white"></div>
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300">
+        <div id="toast-msg" class="bg-red-500 text-white px-6 py-3 rounded-xl font-bold shadow-2xl"></div>
     </div>
 
     <script>
-        let teams = [];
-        let numRounds = 0;
-        let numTeams = 0;
+        let state = {
+            numTeams: 0,
+            numRounds: 0,
+            currentRound: 1,
+            teams: []
+        };
 
-        function calculatePositionPoints(pos) {
-            const pointsMap = { 1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2 };
-            if (pos >= 1 && pos <= 7) return pointsMap[pos];
-            if (pos >= 8 && pos <= 16) return 1;
-            return 0;
-        }
+        const POS_POINTS = { 1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1 };
 
-        function showNotification(msg, isError = true) {
-            const notif = document.getElementById('notification');
-            const content = document.getElementById('notif-content');
-            content.textContent = msg;
-            content.className = `px-6 py-3 rounded-2xl shadow-2xl font-bold text-white ${isError ? 'bg-red-500' : 'bg-green-600'}`;
-            notif.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => notif.classList.add('translate-y-20', 'opacity-0'), 4000);
-        }
-
-        function switchScreen(id) {
-            ['setup-screen', 'names-screen', 'rounds-screen'].forEach(s => 
-                document.getElementById(s).classList.add('hidden')
-            );
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function startTeamSetup() {
-            numTeams = parseInt(document.getElementById('num-teams').value);
-            numRounds = parseInt(document.getElementById('num-rounds').value);
-            if (numTeams < 1 || numRounds < 1) return showNotification("Valores inválidos");
+        function initApp() {
+            state.numTeams = parseInt(document.getElementById('num-teams').value);
+            state.numRounds = parseInt(document.getElementById('num-rounds').value);
             
-            teams = Array.from({ length: numTeams }, (_, i) => ({
-                id: i, nombre: `Equipo ${i + 1}`, puntosTotales: 0,
-                puntosPosicion: 0, puntosKills: 0,
-                rondas: Array.from({ length: numRounds }, () => ({ pos: 0, kills: 0, puntosRonda: 0 }))
-            }));
-            renderNameInputs();
-            switchScreen('names-screen');
+            for(let i=1; i <= state.numTeams; i++) {
+                state.teams.push({ id: i, name: `Equipo ${i}`, score: 0 });
+            }
+
+            renderInputs();
+            updateDashboard();
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('main-screen').classList.remove('hidden');
         }
 
-        function renderNameInputs() {
-            const container = document.getElementById('team-name-inputs');
-            container.innerHTML = teams.map((t, i) => `
-                <div class="space-y-1">
-                    <label class="text-xs text-slate-500 ml-2 uppercase font-bold">Nombre Equipo ${i+1}</label>
-                    <input type="text" value="${t.nombre}" oninput="teams[${i}].nombre = this.value" 
-                    class="input-dark w-full p-3 rounded-xl">
+        function renderInputs() {
+            const container = document.getElementById('inputs-container');
+            container.innerHTML = state.teams.map(t => `
+                <div class="flex items-center gap-4">
+                    <span class="flex-1 font-semibold text-slate-300">${t.name}</span>
+                    <input type="number" placeholder="Pos" data-team="${t.id}" class="pos-in input-dark w-20 p-2 text-center text-accent-blue font-bold">
+                    <input type="number" placeholder="Kills" data-team="${t.id}" class="kills-in input-dark w-20 p-2 text-center text-slate-400">
                 </div>
             `).join('');
         }
 
-        function startRounds() {
-            renderAllRoundsInputs();
-            renderScoreboard();
-            switchScreen('rounds-screen');
-            document.getElementById('input-card').classList.remove('hidden');
-            document.getElementById('finish-message').classList.add('hidden');
+        function processRound() {
+            const posInputs = document.querySelectorAll('.pos-in');
+            const killInputs = document.querySelectorAll('.kills-in');
+            const usedPos = new Set();
+            let roundData = [];
+
+            // Validación estricta
+            for(let i=0; i < posInputs.length; i++) {
+                const p = parseInt(posInputs[i].value);
+                const k = parseInt(killInputs[i].value || 0);
+                const teamId = parseInt(posInputs[i].dataset.team);
+
+                if(!p || p < 1 || p > state.numTeams) return notify(`Posición inválida para el Equipo ${teamId}`);
+                if(usedPos.has(p)) return notify(`La posición ${p} ya fue asignada`);
+                
+                usedPos.add(p);
+                roundData.push({ teamId, points: (POS_POINTS[p] || 0) + k });
+            }
+
+            // Aplicar puntos
+            roundData.forEach(data => {
+                const team = state.teams.find(t => t.id === data.teamId);
+                team.score += data.points;
+            });
+
+            if(state.currentRound < state.numRounds) {
+                state.currentRound++;
+                notify("Ronda guardada con éxito", false);
+                updateDashboard();
+                // Limpiar campos
+                posInputs.forEach(i => i.value = "");
+                killInputs.forEach(i => i.value = "");
+            } else {
+                notify("¡Torneo Finalizado!", false);
+                updateDashboard();
+                document.getElementById('inputs-container').parentElement.innerHTML = `
+                    <div class="text-center py-10">
+                        <p class="text-5xl mb-4 text-accent-yellow">👑</p>
+                        <h3 class="text-xl font-bold">Torneo Concluido</h3>
+                    </div>`;
+            }
         }
 
-        function renderAllRoundsInputs() {
-            const headerRow = document.getElementById('rounds-header-row');
-            const body = document.getElementById('all-rounds-inputs-body');
-            
-            let headerHtml = `<th class="sticky-col p-4 bg-slate-800 text-slate-200">Equipo</th>`;
-            for (let r = 1; r <= numRounds; r++) {
-                headerHtml += `<th colspan="2" class="p-4 text-center border-l border-slate-700 bg-slate-800/30">Ronda ${r}</th>`;
-            }
-            headerRow.innerHTML = headerHtml;
+        function updateDashboard() {
+            // Actualizar Stats
+            document.getElementById('stat-round').textContent = `${state.currentRound}/${state.numRounds}`;
+            document.getElementById('stat-left').textContent = state.numRounds - state.currentRound;
+            document.getElementById('round-title').textContent = state.currentRound;
 
-            body.innerHTML = teams.map(t => `
-                <tr class="hover:bg-slate-700/20 transition">
-                    <td class="sticky-col p-4 font-bold border-r border-slate-700">${t.nombre}</td>
-                    ${t.rondas.map((_, r) => `
-                        <td class="p-2 border-l border-slate-800"><input type="number" id="pos-${t.id}-r${r}" placeholder="Pos" class="input-dark w-16 p-2 rounded-lg text-center text-indigo-400 font-bold"></td>
-                        <td class="p-2"><input type="number" id="kills-${t.id}-r${r}" placeholder="K" class="input-dark w-16 p-2 rounded-lg text-center text-cyan-400"></td>
-                    `).join('')}
+            // Ordenar y Renderizar Tabla
+            const sorted = [...state.teams].sort((a,b) => b.score - a.score);
+            document.getElementById('stat-leader').textContent = sorted[0].score > 0 ? sorted[0].name : "---";
+
+            const body = document.getElementById('leaderboard-body');
+            body.innerHTML = sorted.map((t, i) => `
+                <tr class="group">
+                    <td class="py-4 font-bold text-accent-blue">${i+1}</td>
+                    <td class="py-4 font-semibold text-slate-200">${t.name}</td>
+                    <td class="py-4 text-right font-bold text-accent-cyan">${t.score}</td>
                 </tr>
             `).join('');
         }
 
-        function processAllRounds() {
-            let roundPositions = Array.from({ length: numRounds }, () => new Set());
-            let tempResults = [];
-
-            for (let t = 0; t < teams.length; t++) {
-                let teamRes = { total: 0, pPos: 0, pKill: 0, rondas: [] };
-                for (let r = 0; r < numRounds; r++) {
-                    const pVal = document.getElementById(`pos-${teams[t].id}-r${r}`).value;
-                    const kVal = document.getElementById(`kills-${teams[t].id}-r${r}`).value;
-
-                    if (pVal === "" || kVal === "") return showNotification(`Faltan datos: ${teams[t].nombre}, R${r+1}`);
-                    
-                    const p = parseInt(pVal);
-                    const k = parseInt(kVal);
-
-                    if (p < 1 || p > numTeams) return showNotification(`Posición inválida en Ronda ${r+1}`);
-                    if (roundPositions[r].has(p)) return showNotification(`Posición ${p} repetida en Ronda ${r+1}`);
-                    
-                    roundPositions[r].add(p);
-                    const pPoints = calculatePositionPoints(p);
-                    teamRes.pPos += pPoints;
-                    teamRes.pKill += k;
-                    teamRes.total += (pPoints + k);
-                    teamRes.rondas.push({ pos: p, kills: k });
-                }
-                tempResults.push(teamRes);
-            }
-
-            // Aplicar resultados
-            teams.forEach((t, i) => {
-                t.puntosTotales = tempResults[i].total;
-                t.puntosPosicion = tempResults[i].pPos;
-                t.puntosKills = tempResults[i].pKill;
-                t.rondas = tempResults[i].rondas;
-            });
-
-            document.getElementById('input-card').classList.add('hidden');
-            document.getElementById('finish-message').classList.remove('hidden');
-            renderScoreboard();
-            showNotification("Torneo Calculado", false);
+        function notify(msg, isError = true) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            msgEl.textContent = msg;
+            msgEl.style.backgroundColor = isError ? "#ef4444" : "#10b981";
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
-        function renderScoreboard() {
-            const body = document.getElementById('scoreboard-body');
-            const sorted = [...teams].sort((a, b) => b.puntosTotales - a.puntosTotales);
-            
-            body.innerHTML = sorted.map((t, i) => {
-                const isWinner = i === 0 && t.puntosTotales > 0;
-                return `
-                    <tr class="transition ${isWinner ? 'bg-indigo-500/10 gold-shadow' : ''}">
-                        <td class="p-4 font-bold text-xl ${i < 3 ? 'text-indigo-400' : 'text-slate-500'}">${i + 1}</td>
-                        <td class="p-4 font-semibold text-lg">${t.nombre} ${isWinner ? '👑' : ''}</td>
-                        <td class="p-4 text-right font-mono text-slate-400">${t.puntosPosicion}</td>
-                        <td class="p-4 text-right font-mono text-slate-400">${t.puntosKills}</td>
-                        <td class="p-4 text-right font-mono text-2xl text-cyan-400 font-bold">${t.puntosTotales}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function resetTournament() {
-            if (confirm('¿Reiniciar todo?')) location.reload();
+        function copyToClipboard() {
+            const sorted = [...state.teams].sort((a,b) => b.score - a.score);
+            let text = "🏆 CLASIFICACIÓN GENERAL 🏆\n\n";
+            sorted.forEach((t, i) => text += `${i+1}. ${t.name} - ${t.score} PTS\n`);
+            navigator.clipboard.writeText(text);
+            notify("Copiado al portapapeles", false);
         }
     </script>
 </body>
 </html>
+
 
 
