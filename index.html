@@ -16,7 +16,6 @@
             padding: 20px;
         }
 
-        /* Estilo de Contenedores Principales (Glassmorphism) */
         .main-card { 
             background: rgba(30, 41, 59, 0.5); 
             backdrop-filter: blur(10px); 
@@ -24,7 +23,6 @@
             border-radius: 24px;
         }
 
-        /* Inputs Estilo Imagen */
         .input-field {
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -41,7 +39,6 @@
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
         }
 
-        /* Colores de Acento */
         .text-cyan-accent { color: #22d3ee; }
         .text-blue-accent { color: #818cf8; }
         .text-yellow-accent { color: #fbbf24; }
@@ -59,7 +56,6 @@
             border: 1px solid rgba(251, 191, 36, 0.4);
         }
 
-        /* Botón de Reinicio Estilizado */
         .btn-reset {
             background: rgba(30, 41, 59, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -86,7 +82,7 @@
 
     <div id="app" class="w-full max-w-6xl">
         
-        <section id="setup-screen" class="main-card p-8 max-w-4xl mx-auto animate__animated animate__fadeIn">
+        <section id="setup-screen" class="main-card p-8 max-w-4xl mx-auto">
             <div class="flex items-center gap-4 mb-8">
                 <div class="bg-indigo-600 p-3 rounded-xl shadow-lg shadow-indigo-500/20">⚙️</div>
                 <h2 class="text-2xl font-bold">Configuración General</h2>
@@ -159,7 +155,9 @@
                             <tr>
                                 <th class="pb-4">Pos</th>
                                 <th class="pb-4">Equipo</th>
-                                <th class="pb-4 text-right">Pts</th>
+                                <th class="pb-4 text-center">Pts Pos</th>
+                                <th class="pb-4 text-center">Kills</th>
+                                <th class="pb-4 text-right">Total</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboard-body" class="divide-y divide-slate-800/50">
@@ -217,6 +215,8 @@
             tournament.teams = Array.from(nameInputs).map((input, idx) => ({
                 id: idx + 1,
                 name: input.value || `Equipo ${idx + 1}`,
+                placementScore: 0,
+                killScore: 0,
                 score: 0
             }));
             updateUI();
@@ -250,12 +250,14 @@
                 if(usedPos.has(p)) return notify(`Error: La posición ${p} ya está asignada`);
                 
                 usedPos.add(p);
-                updates.push({ id, pts: (POINTS_SYSTEM[p] || 0) + k });
+                updates.push({ id, pPts: (POINTS_SYSTEM[p] || 0), kPts: k });
             }
 
             updates.forEach(upd => {
                 const team = tournament.teams.find(t => t.id === upd.id);
-                team.score += upd.pts;
+                team.placementScore += upd.pPts;
+                team.killScore += upd.kPts;
+                team.score = team.placementScore + team.killScore;
             });
 
             if(tournament.currentRound < tournament.config.rounds) {
@@ -287,6 +289,8 @@
                 <tr class="group hover:bg-white/5 transition">
                     <td class="py-4 font-bold text-blue-accent text-lg">${i+1}</td>
                     <td class="py-4 font-bold text-slate-200">${t.name}</td>
+                    <td class="py-4 text-center text-slate-400 font-medium">${t.placementScore}</td>
+                    <td class="py-4 text-center text-slate-400 font-medium">${t.killScore}</td>
                     <td class="py-4 text-right font-bold text-cyan-accent text-lg">${t.score}</td>
                 </tr>
             `).join('');
@@ -309,14 +313,20 @@
 
         function copyTable() {
             const sorted = [...tournament.teams].sort((a,b) => b.score - a.score);
-            let txt = "🏆 RANKING FINAL - TOURNAMENT MASTER 🏆\n\n";
-            sorted.forEach((t, i) => txt += `${i+1}º ${t.name} » ${t.score} Puntos\n`);
+            let txt = "🏆 RANKING GENERAL - TOURNAMENT MASTER 🏆\n";
+            txt += `Ronda: ${tournament.currentRound}/${tournament.config.rounds}\n\n`;
+            txt += "POS | EQUIPO | PTS POS | KILLS | TOTAL\n";
+            txt += "-------------------------------------------\n";
+            sorted.forEach((t, i) => {
+                txt += `${i+1}º | ${t.name} | ${t.placementScore} | ${t.killScore} | ${t.score} pts\n`;
+            });
             navigator.clipboard.writeText(txt);
-            notify("¡Ranking copiado!", false);
+            notify("¡Ranking detallado copiado!", false);
         }
     </script>
 </body>
 </html>
+
 
 
 
