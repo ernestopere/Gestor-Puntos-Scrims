@@ -398,6 +398,55 @@
             navigator.clipboard.writeText(txt);
             notify("¡Tabla copiada al portapapeles!", false);
         }
+        function copyTable() {
+            const sorted = [...tournament.teams].sort((a,b) => b.score - a.score);
+            let txt = "🏆 OPEN LCS SCRIMS - RESULTADOS 🏆\n";
+            txt += `Partida: ${tournament.currentRound > tournament.config.rounds ? 'FINAL' : tournament.currentRound + '/' + tournament.config.rounds}\n\n`;
+            txt += "POS | EQUIPO | PTS POS | KILLS | TOTAL\n";
+            txt += "----------------------------------------\n";
+            sorted.forEach((t, i) => {
+                txt += `${i+1}º | ${t.name} | ${t.placementScore} | ${t.killScore} | ${t.score} pts\n`;
+            });
+            navigator.clipboard.writeText(txt);
+            notify("¡Tabla copiada al portapapeles!", false);
+        }
+        function exportToXML() {
+            const sorted = [...tournament.teams].sort((a, b) => b.score - a.score);
+            
+            let xmlString = '<?xml version="1.0" encoding="UTF-8"?>\n';
+            xmlString += '<tournament>\n';
+            xmlString += `  <metadata>\n`;
+            xmlString += `    <tournamentName>Open LCS Scrims</tournamentName>\n`;
+            xmlString += `    <date>${new Date().toISOString()}</date>\n`;
+            xmlString += `    <round>${tournament.currentRound}</round>\n`;
+            xmlString += `  </metadata>\n`;
+            xmlString += '  <results>\n';
+
+            sorted.forEach((t, i) => {
+                xmlString += '    <team>\n';
+                xmlString += `      <rank>${i+1}</rank>\n`;
+                xmlString += `      <name>${t.name.replace(/&/g, '&amp;')}</name>\n`;
+                xmlString += `      <placementPoints>${t.placementScore}</placementPoints>\n`;
+                xmlString += `      <killPoints>${t.killScore}</killPoints>\n`;
+                xmlString += `      <totalPoints>${t.score}</totalPoints>\n`;
+                xmlString += '    </team>\n';
+            });
+
+            xmlString += '  </results>\n';
+            xmlString += '</tournament>';
+
+            const blob = new Blob([xmlString], { type: 'application/xml' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `resultados_lcs_ronda_${tournament.currentRound}.xml`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            notify("Archivo XML descargado", false);
+        }
     </script>
 </body>
 </html>
