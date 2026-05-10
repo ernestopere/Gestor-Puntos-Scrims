@@ -1,4 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> - Tournament Manager - </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #020617; 
+            color: #f8fafc;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 80%);
+        }
 
+        .glass-panel { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 24px;
+        }
+
+        .input-field {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #000;
+            font-weight: 800;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <section id="login-screen" class="flex items-center justify-center min-h-[80vh]">
+        <div class="glass-panel p-10 w-full max-w-md animate-fade">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-black tracking-tighter italic">OPEN LCS <span class="text-green-500">PRO</span></h1>
+                <p class="text-slate-400 text-sm">Panel de Administración</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Usuario</label>
+                    <input type="text" id="user-auth" class="input-field w-full" placeholder="admin">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Contraseña</label>
+                    <input type="password" id="pass-auth" class="input-field w-full" placeholder="••••••••">
+                </div>
+                <button onclick="handleLogin()" class="btn-primary w-full py-4 rounded-xl mt-4 uppercase tracking-widest">Entrar al Sistema</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="setup-screen" class="hidden max-w-5xl mx-auto animate-fade">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="glass-panel p-6 border-l-4 border-green-500">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">🏆 Puntos Globales</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center bg-black/30 p-3 rounded-lg">
+                        <span class="text-sm">Puntos por Kill</span>
+                        <input type="number" id="pts-kill" value="1" class="input-field w-20 text-center text-green-400 font-bold">
+                    </div>
+                    <p class="text-[10px] text-slate-500 uppercase font-bold mt-4 mb-2">Puntos por Posición</p>
+                    <div id="points-config-list" class="grid grid-cols-2 gap-2 h-64 overflow-y-auto custom-scrollbar pr-2">
+                        </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 glass-panel p-8">
+                <h3 class="text-xl font-bold mb-6">⚙️ Configuración del Torneo</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase">Slots (Equipos)</label>
+                        <input type="number" id="num-teams" value="16" class="input-field w-full text-xl font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase">Cantidad de Partidas</label>
+                        <input type="number" id="num-rounds" value="3" class="input-field w-full text-xl font-bold">
+                    </div>
+                </div>
+                <button onclick="goToTeamNames()" class="btn-primary w-full py-5 rounded-2xl uppercase text-lg">Configurar Equipos →</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="names-screen" class="hidden max-w-4xl mx-auto animate-fade">
+        <div class="glass-panel p-8">
+            <h2 class="text-2xl font-bold mb-6">📝 Registro de Rosters</h2>
+            <div id="team-inputs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-h-96 overflow-y-auto pr-4 custom-scrollbar"></div>
+            <div class="flex gap-4">
+                <button onclick="showScreen('setup-screen')" class="flex-1 bg-slate-800 py-4 rounded-xl font-bold">Atrás</button>
+                <button onclick="startTournament()" class="flex-[2] btn-primary py-4 rounded-xl uppercase">Iniciar Scrims</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="main-screen" class="hidden max-w-7xl mx-auto animate-fade">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="glass-panel p-4 text-center">
+                <p class="text-slate-500 text-[10px] uppercase font-bold">Partida</p>
+                <p id="stat-round" class="text-2xl font-black text-white">1/3</p>
+            </div>
+            <div class="glass-panel p-4 text-center border-b-2 border-green-500">
+                <p class="text-green-500 text-[10px] uppercase font-bold">Líder</p>
+                <p id="stat-leader" class="text-xl font-black truncate">---</p>
+            </div>
+            <div class="glass-panel p-4 text-center">
+                <p class="text-slate-500 text-[10px] uppercase font-bold">Total Kills</p>
+                <p id="stat-kills" class="text-2xl font-black">0</p>
+            </div>
+            <div class="glass-panel p-4 text-center">
+                <p class="text-slate-500 text-[10px] uppercase font-bold">Estado</p>
+                <p id="stat-status" class="text-sm font-black text-green-400 uppercase">En Vivo</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-4 glass-panel p-6 h-fit">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold uppercase tracking-tighter">Resultados Partida <span id="round-title" class="text-green-500">#1</span></h3>
+                </div>
+                <div id="round-entry-list" class="space-y-3 mb-6 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                <button onclick="processRound()" class="btn-primary w-full py-4 rounded-xl shadow-lg shadow-green-900/20">GUARDAR RESULTADOS</button>
+            </div>
+
+            <div class="lg:col-span-8 glass-panel p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold uppercase tracking-tighter">Tabla de Posiciones General</h3>
+                    <div class="flex gap-2">
+                        <button onclick="copyTable()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-xs font-bold transition">COPIAR RESULTADOS</button>
+                        <button onclick="confirmReset()" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 px-4 py-2 rounded-lg text-xs font-bold transition">REINICIAR</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="text-slate-500 text-[10px] uppercase text-left border-b border-white/5">
+                                <th class="pb-4">#</th>
+                                <th class="pb-4">Clan / Equipo</th>
+                                <th class="pb-4 text-center">Pos Pts</th>
+                                <th class="pb-4 text-center">Kills</th>
+                                <th class="pb-4 text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body" class="text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="notification" class="fixed bottom-8 right-8 transform translate-y-32 opacity-0 transition-all duration-500 z-50">
+        <div id="notif-box" class="px-6 py-4 rounded-2xl shadow-2xl font-bold flex items-center gap-3"></div>
+    </div>
+
+    <script>
+        
+        let tournament = JSON.parse(localStorage.getItem('lcs_data')) || {
+            config: { teams: 16, rounds: 3, ptsKill: 1, ptsPos: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1} },
+            currentRound: 1,
+            teams: [],
+            isFinished: false
+        };
+
+        const CREDENTIALS = { user: "admin", pass: "1234" }; // Cambiar aquí para seguridad real
+
+        
+        function handleLogin() {
+            const u = document.getElementById('user-auth').value;
+            const p = document.getElementById('pass-auth').value;
+            if(u === CREDENTIALS.user && p === CREDENTIALS.pass) {
+                notify("Sesión iniciada correctamente", "success");
+                showScreen('setup-screen');
+                initPointsConfig();
+            } else {
+                notify("Credenciales incorrectas", "error");
+            }
+        }
+
+    
+        function showScreen(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function initPointsConfig() {
+            const container = document.getElementById('points-config-list');
+            container.innerHTML = '';
+            for(let i=1; i<=25; i++) {
+                container.innerHTML += `
+                    <div class="flex items-center gap-2 bg-white/5 p-2 rounded">
+                        <span class="text-[10px] w-6">#${i}</span>
+                        <input type="number" class="pos-config-input input-field py-1 px-2 text-xs w-full" data-pos="${i}" value="${tournament.config.ptsPos[i] || 0}">
+                    </div>
+                `;
+            }
+        }
+
+        function goToTeamNames() {
+            tournament.config.teams = parseInt(document.getElementById('num-teams').value);
+            tournament.config.rounds = parseInt(document.getElementById('num-rounds').value);
+            tournament.config.ptsKill = parseInt(document.getElementById('pts-kill').value);
+            
+            
+            document.querySelectorAll('.pos-config-input').forEach(input => {
+                tournament.config.ptsPos[input.dataset.pos] = parseInt(input.value || 0);
+            });
+
+            const grid = document.getElementById('team-inputs-grid');
+            grid.innerHTML = '';
+            for(let i=1; i <= tournament.config.teams; i++) {
+                grid.innerHTML += `
+                    <div class="relative group">
+                        <span class="absolute left-3 top-2 text-[9px] font-black text-slate-500 group-focus-within:text-green-500">SLOT ${i}</span>
+                        <input type="text" class="team-name-input input-field w-full pt-6 pb-2 font-bold" value="Team ${i}">
+                    </div>
+                `;
+            }
+            showScreen('names-screen');
+        }
+
+        function startTournament() {
+            const names = document.querySelectorAll('.team-name-input');
+            tournament.teams = Array.from(names).map((n, idx) => ({
+                id: idx + 1,
+                name: n.value || `Equipo ${idx + 1}`,
+                ptsPos: 0,
+                ptsKill: 0,
+                total: 0
+            }));
+            saveAndRefresh();
+            showScreen('main-screen');
+            renderRoundEntry();
+        }
+
+        function renderRoundEntry() {
+            const container = document.getElementById('round-entry-list');
+            container.innerHTML = tournament.teams.map(t => `
+                <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5">
+                    <span class="text-xs font-bold text-slate-500 w-4">${t.id}</span>
+                    <span class="flex-1 font-bold text-slate-200 truncate text-sm">${t.name}</span>
+                    <div class="flex gap-2">
+                        <input type="number" placeholder="Pos" data-id="${t.id}" class="pos-in input-field w-14 py-1 text-center text-sm" min="1">
+                        <input type="number" placeholder="Kills" data-id="${t.id}" class="kill-in input-field w-14 py-1 text-center text-sm border-green-900/30" min="0">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function processRound() {
+            const posInputs = document.querySelectorAll('.pos-in');
+            const killInputs = document.querySelectorAll('.kill-in');
+            let tempUpdates = [];
+            let seenPos = new Set();
+
+            for(let i=0; i < posInputs.length; i++) {
+                const p = parseInt(posInputs[i].value);
+                const k = parseInt(killInputs[i].value || 0);
+                const tid = parseInt(posInputs[i].dataset.id);
+
+                if(isNaN(p)) continue;
+                if(seenPos.has(p)) return notify(`La posición ${p} está duplicada`, "error");
+                seenPos.add(p);
+
+                tempUpdates.push({ 
+                    tid, 
+                    pPts: tournament.config.ptsPos[p] || 0, 
+                    kPts: k * tournament.config.ptsKill 
+                });
+            }
+
+            if(tempUpdates.length === 0) return notify("No hay datos para guardar", "error");
+
+            tempUpdates.forEach(upd => {
+                const team = tournament.teams.find(t => t.id === upd.tid);
+                team.ptsPos += upd.pPts;
+                team.ptsKill += upd.kPts;
+                team.total = team.ptsPos + team.ptsKill;
+            });
+
+            if(tournament.currentRound < tournament.config.rounds) {
+                tournament.currentRound++;
+                notify("Partida registrada", "success");
+                renderRoundEntry();
+            } else {
+                tournament.isFinished = true;
+                notify("¡Torneo Finalizado!", "success");
+                document.getElementById('stat-status').textContent = "Finalizado";
+                document.getElementById('stat-status').className = "text-sm font-black text-yellow-500 uppercase";
+            }
+            saveAndRefresh();
+        }
+
+        function saveAndRefresh() {
+            localStorage.setItem('lcs_data', JSON.stringify(tournament));
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const sorted = [...tournament.teams].sort((a,b) => {
+                if(b.total !== a.total) return b.total - a.total;
+                return b.ptsPos - a.ptsPos;
+            });
+
+            document.getElementById('stat-round').textContent = `${tournament.currentRound}/${tournament.config.rounds}`;
+            document.getElementById('round-title').textContent = `#${tournament.currentRound}`;
+            document.getElementById('stat-leader').textContent = sorted[0]?.total > 0 ? sorted[0].name : "---";
+            document.getElementById('stat-kills').textContent = tournament.teams.reduce((acc, t) => acc + t.ptsKill, 0);
+
+            const body = document.getElementById('leaderboard-body');
+            body.innerHTML = sorted.map((t, i) => `
+                <tr class="border-b border-white/5 hover:bg-white/5 transition">
+                    <td class="py-4 font-black ${i < 3 ? 'text-green-500' : 'text-slate-500'}">${i+1}º</td>
+                    <td class="py-4 font-bold">${t.name}</td>
+                    <td class="py-4 text-center text-slate-400">${t.ptsPos}</td>
+                    <td class="py-4 text-center text-slate-400">${t.ptsKill}</td>
+                    <td class="py-4 text-right font-black text-white text-lg">${t.total}</td>
+                </tr>
+            `).join('');
+        }
+
+        function notify(msg, type) {
+            const box = document.getElementById('notification');
+            const inner = document.getElementById('notif-box');
+            inner.className = `px-6 py-4 rounded-2xl shadow-2xl font-bold flex items-center gap-3 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+            inner.innerHTML = `${type === 'success' ? '✅' : '❌'} ${msg}`;
+            box.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => box.classList.add('translate-y-32', 'opacity-0'), 3000);
+        }
+
+        function copyTable() {
+            const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
+            let text = `🏆 *RESULTADOS DE PUNTOS* 🏆\n📍 Partida: ${tournament.currentRound}/${tournament.config.rounds}\n\n`;
+            sorted.forEach((t, i) => {
+                text += `${i+1}º | ${t.name.padEnd(12)} | ${t.total} pts\n`;
+            });
+            navigator.clipboard.writeText(text);
+            notify("Copiado al portapapeles", "success");
+        }
+
+        function confirmReset() {
+            if(confirm("¿Estás seguro de que deseas borrar todos los datos del torneo?")) {
+                localStorage.removeItem('lcs_data');
+                location.reload();
+            }
+        }
+
+        // Auto-load if data exists
+        window.onload = () => {
+            if(tournament.teams.length > 0) {
+                showScreen('main-screen');
+                updateLeaderboard();
+                if(!tournament.isFinished) renderRoundEntry();
+            }
+        }
+    </script>
+</body>
+</html>
 
 
 
