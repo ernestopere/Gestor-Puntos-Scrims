@@ -39,7 +39,7 @@
             outline: none;
         }
 
-        /* Quitar flechas de inputs numéricos */
+        
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
@@ -202,7 +202,7 @@
             { user: "Vanny", pass: "circle2026", org: "OPEN CIRCLE" }
         ];
 
-        // USO DE SESSIONSTORAGE PARA REINICIO AL CERRAR VENTANA
+    
         let tournament = JSON.parse(sessionStorage.getItem('_pro_data')) || {
             config: { teams: 16, rounds: 3, ptsKill: 1, ptsPos: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1} },
             currentRound: 1,
