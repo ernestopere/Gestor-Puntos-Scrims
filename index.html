@@ -39,6 +39,16 @@
             outline: none;
         }
 
+        /* --- QUITAR FLECHAS DE LOS INPUTS NUMÉRICOS --- */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
         .btn-primary {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #000;
@@ -66,7 +76,7 @@
     <section id="login-screen" class="flex items-center justify-center min-h-[80vh]">
         <div class="glass-panel p-10 w-full max-w-md animate-fade">
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-black tracking-tighter italic">Administracion <span class="text-green-500">Scrims</span></h1>
+                <h1 class="text-3xl font-black tracking-tighter italic">ADMINISTRACION<span class="text-green-500">PRO</span></h1>
                 <p class="text-slate-400 text-sm">Panel de Gestión Multi-Usuario</p>
             </div>
             <div class="space-y-4">
@@ -80,7 +90,6 @@
                 </div>
                 <button onclick="handleLogin()" class="btn-primary w-full py-4 rounded-xl mt-4 uppercase tracking-widest">Acceder al Panel</button>
             </div>
-            <p class="text-[10px] text-center text-slate-600 mt-6 uppercase tracking-widest">Acceso restringido para organizadores</p>
         </div>
     </section>
 
@@ -156,7 +165,13 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-4 glass-panel p-6 h-fit">
-                <h3 class="font-bold uppercase tracking-tighter mb-6">Puntaje Partida <span id="round-title" class="text-green-500">#1</span></h3>
+                <div class="flex justify-between items-end mb-6">
+                    <h3 class="font-bold uppercase tracking-tighter">Puntaje Partida <span id="round-title" class="text-green-500">#1</span></h3>
+                    <div class="flex gap-8 text-[9px] font-black text-slate-500 uppercase mr-2">
+                        <span>Pos</span>
+                        <span>Kill</span>
+                    </div>
+                </div>
                 <div id="round-entry-list" class="space-y-3 mb-6 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar"></div>
                 <button onclick="processRound()" class="btn-primary w-full py-4 rounded-xl shadow-lg">CONFIRMAR PUNTOS</button>
             </div>
@@ -193,9 +208,8 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS DE USUARIOS ---
         const CREDENTIALS = [
-            { user: "admin", pass: "Admin2026.", org: "SISTEMA GLOBAL" },
+            { user: "admin", pass: "1234", org: "SISTEMA GLOBAL" },
             { user: "Fabio", pass: "lcs2026", org: "OPEN LCS SCRIMS" },
             { user: "Vanny", pass: "circle2026", org: "OPEN CIRCLE" }
         ];
@@ -276,8 +290,8 @@
                     <span class="text-xs font-bold text-slate-500 w-4">${t.id}</span>
                     <span class="flex-1 font-bold text-slate-200 truncate text-sm">${t.name}</span>
                     <div class="flex gap-2">
-                        <input type="number" data-id="${t.id}" class="pos-in input-field w-14 py-1 text-center text-sm" min="1">
-                        <input type="number" data-id="${t.id}" class="kill-in input-field w-14 py-1 text-center text-sm border-green-900/30" min="0">
+                        <input type="number" data-id="${t.id}" class="pos-in input-field w-12 py-1 px-0 text-center text-sm" min="1">
+                        <input type="number" data-id="${t.id}" class="kill-in input-field w-12 py-1 px-0 text-center text-sm border-green-900/30" min="0">
                     </div>
                 </div>
             `).join('');
@@ -316,7 +330,7 @@
         }
 
         function saveAndRefresh() {
-            localStorage.setItem('lcs_pro_data', JSON.stringify(tournament));
+            localStorage.setItem('_pro_data', JSON.stringify(tournament));
             updateLeaderboard();
         }
 
@@ -341,7 +355,6 @@
             `).join('');
         }
 
-        // --- FUNCIÓN DE EXPORTAR A EXCEL ---
         function exportToExcel() {
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
             const data = sorted.map((t, i) => ({
@@ -351,13 +364,10 @@
                 "Puntos Kill": t.ptsKill,
                 "Total": t.total
             }));
-            
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Resultados");
-            
-            const fileName = `Resultados_${tournament.activeUser || 'General'}.xlsx`;
-            XLSX.writeFile(wb, fileName);
+            XLSX.writeFile(wb, `Resultados_${tournament.activeUser || 'General'}.xlsx`);
             notify("Excel descargado", "success");
         }
 
@@ -382,7 +392,7 @@
 
         function confirmReset() {
             if(confirm("¿Estás seguro? Se borrarán todos los puntos y equipos.")) {
-                localStorage.removeItem('_pro_data_');
+                localStorage.removeItem('_pro_data');
                 location.reload();
             }
         }
@@ -397,5 +407,3 @@
     </script>
 </body>
 </html>
-
-
