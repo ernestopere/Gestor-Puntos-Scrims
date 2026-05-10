@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open - Tournament Manager - </title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
         
@@ -65,17 +66,17 @@
     <section id="login-screen" class="flex items-center justify-center min-h-[80vh]">
         <div class="glass-panel p-10 w-full max-w-md animate-fade">
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-black tracking-tighter italic">OPEN ADMI <span class="text-green-500">PRO</span></h1>
+                <h1 class="text-3xl font-black tracking-tighter italic">OPEN LCS <span class="text-green-500">PRO</span></h1>
                 <p class="text-slate-400 text-sm">Panel de Gestión Multi-Usuario</p>
             </div>
             <div class="space-y-4">
                 <div>
                     <label class="text-xs font-bold text-slate-500 uppercase ml-1">Usuario / Organización</label>
-                    <input type="text" id="user-auth" class="input-field w-full" placeholder="Ej: OPEN CIRCLE">
+                    <input type="text" id="user-auth" class="input-field w-full">
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-500 uppercase ml-1">Contraseña</label>
-                    <input type="password" id="pass-auth" class="input-field w-full" placeholder="••••••••">
+                    <input type="password" id="pass-auth" class="input-field w-full">
                 </div>
                 <button onclick="handleLogin()" class="btn-primary w-full py-4 rounded-xl mt-4 uppercase tracking-widest">Acceder al Panel</button>
             </div>
@@ -97,7 +98,7 @@
                 <h3 class="text-xl font-bold mb-6 flex items-center gap-2">🏆 Sistema de Puntos</h3>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center bg-black/30 p-3 rounded-lg">
-                        <span class="text-sm">Puntos por Kill</span>
+                        <span class="text-sm font-bold">Puntos por Kill</span>
                         <input type="number" id="pts-kill" value="1" class="input-field w-20 text-center text-green-400 font-bold">
                     </div>
                     <p class="text-[10px] text-slate-500 uppercase font-bold mt-4 mb-2">Puntos por Posición</p>
@@ -163,13 +164,14 @@
             <div class="lg:col-span-8 glass-panel p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="font-bold uppercase tracking-tighter">Tabla de Posiciones General</h3>
-                    <div class="flex gap-2">
-                        <button onclick="copyTable()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest">Copiar Tabla</button>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="exportToExcel()" class="bg-green-600/20 hover:bg-green-600/40 text-green-500 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest border border-green-500/30">Exportar Excel</button>
+                        <button onclick="copyTable()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest">Copiar Texto</button>
                         <button onclick="confirmReset()" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest">Borrar Todo</button>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full">
+                    <table id="table-results" class="w-full">
                         <thead>
                             <tr class="text-slate-500 text-[10px] uppercase text-left border-b border-white/5">
                                 <th class="pb-4">#</th>
@@ -193,19 +195,13 @@
     <script>
         // --- BASE DE DATOS DE USUARIOS ---
         const CREDENTIALS = [
-            { user: "admin", pass: "1234", org: "SISTEMA GLOBAL" },
-            { user: "Fabio", pass: "lcs2024", org: "OPEN LCS SCRIMS" },
-            { user: "Vanny", pass: "circle2024", org: "OPEN CIRCLE" }
+            { user: "admin", pass: "Admin2026.", org: "SISTEMA GLOBAL" },
+            { user: "Fabio", pass: "lcs2026", org: "OPEN LCS SCRIMS" },
+            { user: "Vanny", pass: "circle2026", org: "OPEN CIRCLE" }
         ];
 
-      -
         let tournament = JSON.parse(localStorage.getItem('lcs_pro_data')) || {
-            config: { 
-                teams: 16, 
-                rounds: 3, 
-                ptsKill: 1, 
-                ptsPos: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1} 
-            },
+            config: { teams: 16, rounds: 3, ptsKill: 1, ptsPos: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1} },
             currentRound: 1,
             teams: [],
             isFinished: false,
@@ -215,9 +211,7 @@
         function handleLogin() {
             const uInput = document.getElementById('user-auth').value.trim();
             const pInput = document.getElementById('pass-auth').value;
-            
             const auth = CREDENTIALS.find(u => u.user === uInput && u.pass === pInput);
-
             if(auth) {
                 tournament.activeUser = auth.user;
                 document.getElementById('user-welcome').textContent = `SESIÓN: ${auth.org}`;
@@ -238,12 +232,10 @@
             const container = document.getElementById('points-config-list');
             container.innerHTML = '';
             for(let i=1; i<=25; i++) {
-                container.innerHTML += `
-                    <div class="flex items-center gap-2 bg-white/5 p-2 rounded">
-                        <span class="text-[10px] w-6">#${i}</span>
-                        <input type="number" class="pos-config-input input-field py-1 px-2 text-xs w-full" data-pos="${i}" value="${tournament.config.ptsPos[i] || 0}">
-                    </div>
-                `;
+                container.innerHTML += `<div class="flex items-center gap-2 bg-white/5 p-2 rounded">
+                    <span class="text-[10px] w-6">#${i}</span>
+                    <input type="number" class="pos-config-input input-field py-1 px-2 text-xs w-full" data-pos="${i}" value="${tournament.config.ptsPos[i] || 0}">
+                </div>`;
             }
         }
 
@@ -251,20 +243,16 @@
             tournament.config.teams = parseInt(document.getElementById('num-teams').value);
             tournament.config.rounds = parseInt(document.getElementById('num-rounds').value);
             tournament.config.ptsKill = parseInt(document.getElementById('pts-kill').value);
-            
             document.querySelectorAll('.pos-config-input').forEach(input => {
                 tournament.config.ptsPos[input.dataset.pos] = parseInt(input.value || 0);
             });
-
             const grid = document.getElementById('team-inputs-grid');
             grid.innerHTML = '';
             for(let i=1; i <= tournament.config.teams; i++) {
-                grid.innerHTML += `
-                    <div class="relative group">
-                        <span class="absolute left-3 top-2 text-[9px] font-black text-slate-500 group-focus-within:text-green-500">SLOT ${i}</span>
-                        <input type="text" class="team-name-input input-field w-full pt-6 pb-2 font-bold" value="Team ${i}">
-                    </div>
-                `;
+                grid.innerHTML += `<div class="relative group">
+                    <span class="absolute left-3 top-2 text-[9px] font-black text-slate-500 group-focus-within:text-green-500">SLOT ${i}</span>
+                    <input type="text" class="team-name-input input-field w-full pt-6 pb-2 font-bold" value="Team ${i}">
+                </div>`;
             }
             showScreen('names-screen');
         }
@@ -274,9 +262,7 @@
             tournament.teams = Array.from(names).map((n, idx) => ({
                 id: idx + 1,
                 name: n.value || `Equipo ${idx + 1}`,
-                ptsPos: 0,
-                ptsKill: 0,
-                total: 0
+                ptsPos: 0, ptsKill: 0, total: 0
             }));
             saveAndRefresh();
             showScreen('main-screen');
@@ -290,8 +276,8 @@
                     <span class="text-xs font-bold text-slate-500 w-4">${t.id}</span>
                     <span class="flex-1 font-bold text-slate-200 truncate text-sm">${t.name}</span>
                     <div class="flex gap-2">
-                        <input type="number" placeholder="Pos" data-id="${t.id}" class="pos-in input-field w-14 py-1 text-center text-sm" min="1">
-                        <input type="number" placeholder="Kills" data-id="${t.id}" class="kill-in input-field w-14 py-1 text-center text-sm border-green-900/30" min="0">
+                        <input type="number" data-id="${t.id}" class="pos-in input-field w-14 py-1 text-center text-sm" min="1">
+                        <input type="number" data-id="${t.id}" class="kill-in input-field w-14 py-1 text-center text-sm border-green-900/30" min="0">
                     </div>
                 </div>
             `).join('');
@@ -302,39 +288,27 @@
             const killInputs = document.querySelectorAll('.kill-in');
             let tempUpdates = [];
             let seenPos = new Set();
-
             for(let i=0; i < posInputs.length; i++) {
                 const p = parseInt(posInputs[i].value);
                 const k = parseInt(killInputs[i].value || 0);
                 const tid = parseInt(posInputs[i].dataset.id);
-
                 if(isNaN(p)) continue;
                 if(seenPos.has(p)) return notify(`La posición ${p} está duplicada`, "error");
                 seenPos.add(p);
-
-                tempUpdates.push({ 
-                    tid, 
-                    pPts: tournament.config.ptsPos[p] || 0, 
-                    kPts: k * tournament.config.ptsKill 
-                });
+                tempUpdates.push({ tid, pPts: tournament.config.ptsPos[p] || 0, kPts: k * tournament.config.ptsKill });
             }
-
             if(tempUpdates.length === 0) return notify("Ingresa los datos de la partida", "error");
-
             tempUpdates.forEach(upd => {
                 const team = tournament.teams.find(t => t.id === upd.tid);
-                team.ptsPos += upd.pPts;
-                team.ptsKill += upd.kPts;
-                team.total = team.ptsPos + team.ptsKill;
+                team.ptsPos += upd.pPts; team.ptsKill += upd.kPts; team.total = team.ptsPos + team.ptsKill;
             });
-
             if(tournament.currentRound < tournament.config.rounds) {
                 tournament.currentRound++;
                 notify("Puntos agregados", "success");
                 renderRoundEntry();
             } else {
                 tournament.isFinished = true;
-                notify("¡ scrims finalizadas!", "success");
+                notify("¡Scrims finalizadas!", "success");
                 document.getElementById('stat-status').textContent = "FINALIZADO";
                 document.getElementById('stat-status').className = "text-sm font-black text-yellow-500 uppercase";
             }
@@ -351,12 +325,10 @@
                 if(b.total !== a.total) return b.total - a.total;
                 return b.ptsPos - a.ptsPos;
             });
-
             document.getElementById('stat-round').textContent = `${tournament.currentRound}/${tournament.config.rounds}`;
             document.getElementById('round-title').textContent = `#${tournament.currentRound}`;
             document.getElementById('stat-leader').textContent = sorted[0]?.total > 0 ? sorted[0].name : "---";
             document.getElementById('stat-kills').textContent = tournament.teams.reduce((acc, t) => acc + t.ptsKill, 0);
-
             const body = document.getElementById('leaderboard-body');
             body.innerHTML = sorted.map((t, i) => `
                 <tr class="border-b border-white/5 hover:bg-white/5 transition">
@@ -367,6 +339,26 @@
                     <td class="py-4 text-right font-black text-green-400 text-lg">${t.total}</td>
                 </tr>
             `).join('');
+        }
+
+        // --- FUNCIÓN DE EXPORTAR A EXCEL ---
+        function exportToExcel() {
+            const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
+            const data = sorted.map((t, i) => ({
+                "Posición": `${i+1}º`,
+                "Clan / Equipo": t.name,
+                "Puntos Pos": t.ptsPos,
+                "Puntos Kill": t.ptsKill,
+                "Total": t.total
+            }));
+            
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Resultados");
+            
+            const fileName = `Resultados_${tournament.activeUser || 'General'}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            notify("Excel descargado", "success");
         }
 
         function notify(msg, type) {
@@ -382,22 +374,19 @@
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
             const userTag = tournament.activeUser || "ADMIN";
             let text = `🏆 *RESULTADOS - ${userTag}* 🏆\n📍 Partida: ${tournament.currentRound}/${tournament.config.rounds}\n\n`;
-            sorted.forEach((t, i) => {
-                text += `${i+1}º | ${t.name.padEnd(14)} | ${t.total} PTS\n`;
-            });
-            text += "\n_Generado por OPEN System_";
+            sorted.forEach((t, i) => { text += `${i+1}º | ${t.name.padEnd(14)} | ${t.total} PTS\n`; });
+            text += "\n_Generado por OPEN PRO System_";
             navigator.clipboard.writeText(text);
             notify("Tabla copiada", "success");
         }
 
         function confirmReset() {
             if(confirm("¿Estás seguro? Se borrarán todos los puntos y equipos.")) {
-                localStorage.removeItem('lcs_pro_data');
+                localStorage.removeItem('_pro_data_');
                 location.reload();
             }
         }
 
-        // Recuperar sesión si el usuario ya estaba logueado
         window.onload = () => {
             if(tournament.teams.length > 0) {
                 showScreen('main-screen');
