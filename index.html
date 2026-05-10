@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> - Tournament Manager - </title>
+    <title>Open LCS Pro - Tournament Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
@@ -195,7 +195,6 @@
 
         const CREDENTIALS = { user: "admin", pass: "1234" }; // Cambiar aquí para seguridad real
 
-        
         function handleLogin() {
             const u = document.getElementById('user-auth').value;
             const p = document.getElementById('pass-auth').value;
@@ -208,7 +207,7 @@
             }
         }
 
-    
+       
         function showScreen(id) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
@@ -232,7 +231,7 @@
             tournament.config.rounds = parseInt(document.getElementById('num-rounds').value);
             tournament.config.ptsKill = parseInt(document.getElementById('pts-kill').value);
             
-            
+            // Guardar puntos de posicion configurados
             document.querySelectorAll('.pos-config-input').forEach(input => {
                 tournament.config.ptsPos[input.dataset.pos] = parseInt(input.value || 0);
             });
@@ -361,7 +360,7 @@
 
         function copyTable() {
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
-            let text = `🏆 *RESULTADOS DE PUNTOS* 🏆\n📍 Partida: ${tournament.currentRound}/${tournament.config.rounds}\n\n`;
+            let text = `🏆 *RESULTADOS* 🏆\n📍 Partida: ${tournament.currentRound}/${tournament.config.rounds}\n\n`;
             sorted.forEach((t, i) => {
                 text += `${i+1}º | ${t.name.padEnd(12)} | ${t.total} pts\n`;
             });
