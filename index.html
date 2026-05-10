@@ -65,62 +65,70 @@
     <section id="login-screen" class="flex items-center justify-center min-h-[80vh]">
         <div class="glass-panel p-10 w-full max-w-md animate-fade">
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-black tracking-tighter italic"> OPEN ADMINISTRACION <span class="text-green-500"> PRO </span></h1>
-                <p class="text-slate-400 text-sm">Panel de Administración</p>
+                <h1 class="text-3xl font-black tracking-tighter italic">OPEN ADMI <span class="text-green-500">PRO</span></h1>
+                <p class="text-slate-400 text-sm">Panel de Gestión Multi-Usuario</p>
             </div>
             <div class="space-y-4">
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Usuario</label>
-                    <input type="text" id="user-auth" class="input-field w-full" placeholder="admin">
+                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Usuario / Organización</label>
+                    <input type="text" id="user-auth" class="input-field w-full" placeholder="Ej: OPEN CIRCLE">
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-500 uppercase ml-1">Contraseña</label>
                     <input type="password" id="pass-auth" class="input-field w-full" placeholder="••••••••">
                 </div>
-                <button onclick="handleLogin()" class="btn-primary w-full py-4 rounded-xl mt-4 uppercase tracking-widest">Entrar al Sistema</button>
+                <button onclick="handleLogin()" class="btn-primary w-full py-4 rounded-xl mt-4 uppercase tracking-widest">Acceder al Panel</button>
             </div>
+            <p class="text-[10px] text-center text-slate-600 mt-6 uppercase tracking-widest">Acceso restringido para organizadores</p>
         </div>
     </section>
 
     <section id="setup-screen" class="hidden max-w-5xl mx-auto animate-fade">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Configuración Global</h2>
+                <p id="user-welcome" class="text-green-500 text-xs font-bold uppercase tracking-widest"></p>
+            </div>
+            <button onclick="location.reload()" class="text-xs text-slate-500 hover:text-white uppercase font-bold">Cerrar Sesión</button>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="glass-panel p-6 border-l-4 border-green-500">
-                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">🏆 Puntos Globales</h3>
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">🏆 Sistema de Puntos</h3>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center bg-black/30 p-3 rounded-lg">
                         <span class="text-sm">Puntos por Kill</span>
                         <input type="number" id="pts-kill" value="1" class="input-field w-20 text-center text-green-400 font-bold">
                     </div>
                     <p class="text-[10px] text-slate-500 uppercase font-bold mt-4 mb-2">Puntos por Posición</p>
-                    <div id="points-config-list" class="grid grid-cols-2 gap-2 h-64 overflow-y-auto custom-scrollbar pr-2">
-                        </div>
+                    <div id="points-config-list" class="grid grid-cols-2 gap-2 h-64 overflow-y-auto custom-scrollbar pr-2"></div>
                 </div>
             </div>
 
             <div class="lg:col-span-2 glass-panel p-8">
-                <h3 class="text-xl font-bold mb-6">⚙️ Configuración del Torneo</h3>
+                <h3 class="text-xl font-bold mb-6 italic">⚙️ Parámetros del Torneo</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div>
-                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase">Slots (Equipos)</label>
+                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-widest">Equipos (Slots)</label>
                         <input type="number" id="num-teams" value="16" class="input-field w-full text-xl font-bold">
                     </div>
                     <div>
-                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase">Cantidad de Partidas</label>
+                        <label class="block text-slate-400 text-xs font-bold mb-2 uppercase tracking-widest">Total Partidas</label>
                         <input type="number" id="num-rounds" value="3" class="input-field w-full text-xl font-bold">
                     </div>
                 </div>
-                <button onclick="goToTeamNames()" class="btn-primary w-full py-5 rounded-2xl uppercase text-lg">Configurar Equipos →</button>
+                <button onclick="goToTeamNames()" class="btn-primary w-full py-5 rounded-2xl uppercase text-lg tracking-tighter">Siguiente: Registrar Equipos →</button>
             </div>
         </div>
     </section>
 
     <section id="names-screen" class="hidden max-w-4xl mx-auto animate-fade">
         <div class="glass-panel p-8">
-            <h2 class="text-2xl font-bold mb-6">📝 Registro de Rosters</h2>
+            <h2 class="text-2xl font-bold mb-6 italic uppercase tracking-tighter">Registro de Rosters</h2>
             <div id="team-inputs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-h-96 overflow-y-auto pr-4 custom-scrollbar"></div>
             <div class="flex gap-4">
-                <button onclick="showScreen('setup-screen')" class="flex-1 bg-slate-800 py-4 rounded-xl font-bold">Atrás</button>
-                <button onclick="startTournament()" class="flex-[2] btn-primary py-4 rounded-xl uppercase">Iniciar Scrims</button>
+                <button onclick="showScreen('setup-screen')" class="flex-1 bg-slate-800 py-4 rounded-xl font-bold uppercase text-xs tracking-widest">Atrás</button>
+                <button onclick="startTournament()" class="flex-[2] btn-primary py-4 rounded-xl uppercase tracking-widest">Iniciar Scrims</button>
             </div>
         </div>
     </section>
@@ -128,38 +136,36 @@
     <section id="main-screen" class="hidden max-w-7xl mx-auto animate-fade">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="glass-panel p-4 text-center">
-                <p class="text-slate-500 text-[10px] uppercase font-bold">Partida</p>
+                <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Partida</p>
                 <p id="stat-round" class="text-2xl font-black text-white">1/3</p>
             </div>
             <div class="glass-panel p-4 text-center border-b-2 border-green-500">
-                <p class="text-green-500 text-[10px] uppercase font-bold">Líder</p>
+                <p class="text-green-500 text-[10px] uppercase font-bold tracking-widest">Top Clan</p>
                 <p id="stat-leader" class="text-xl font-black truncate">---</p>
             </div>
             <div class="glass-panel p-4 text-center">
-                <p class="text-slate-500 text-[10px] uppercase font-bold">Total Kills</p>
+                <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Kills Globales</p>
                 <p id="stat-kills" class="text-2xl font-black">0</p>
             </div>
             <div class="glass-panel p-4 text-center">
-                <p class="text-slate-500 text-[10px] uppercase font-bold">Estado</p>
+                <p class="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Estado</p>
                 <p id="stat-status" class="text-sm font-black text-green-400 uppercase">En Vivo</p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-4 glass-panel p-6 h-fit">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold uppercase tracking-tighter">Resultados Partida <span id="round-title" class="text-green-500">#1</span></h3>
-                </div>
+                <h3 class="font-bold uppercase tracking-tighter mb-6">Puntaje Partida <span id="round-title" class="text-green-500">#1</span></h3>
                 <div id="round-entry-list" class="space-y-3 mb-6 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar"></div>
-                <button onclick="processRound()" class="btn-primary w-full py-4 rounded-xl shadow-lg shadow-green-900/20">GUARDAR RESULTADOS</button>
+                <button onclick="processRound()" class="btn-primary w-full py-4 rounded-xl shadow-lg">CONFIRMAR PUNTOS</button>
             </div>
 
             <div class="lg:col-span-8 glass-panel p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="font-bold uppercase tracking-tighter">Tabla de Posiciones General</h3>
                     <div class="flex gap-2">
-                        <button onclick="copyTable()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-xs font-bold transition">COPIAR RESULTADOS</button>
-                        <button onclick="confirmReset()" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 px-4 py-2 rounded-lg text-xs font-bold transition">REINICIAR</button>
+                        <button onclick="copyTable()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest">Copiar Tabla</button>
+                        <button onclick="confirmReset()" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest">Borrar Todo</button>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -185,29 +191,44 @@
     </div>
 
     <script>
-        
-        let tournament = JSON.parse(localStorage.getItem('lcs_data')) || {
-            config: { teams: 16, rounds: 3, ptsKill: 1, ptsPos: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1} },
+        // --- BASE DE DATOS DE USUARIOS ---
+        const CREDENTIALS = [
+            { user: "admin", pass: "1234", org: "SISTEMA GLOBAL" },
+            { user: "Fabio", pass: "lcs2024", org: "OPEN LCS SCRIMS" },
+            { user: "Vanny", pass: "circle2024", org: "OPEN CIRCLE" }
+        ];
+
+      -
+        let tournament = JSON.parse(localStorage.getItem('lcs_pro_data')) || {
+            config: { 
+                teams: 16, 
+                rounds: 3, 
+                ptsKill: 1, 
+                ptsPos: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1} 
+            },
             currentRound: 1,
             teams: [],
-            isFinished: false
+            isFinished: false,
+            activeUser: null
         };
 
-        const CREDENTIALS = { user: "admin", pass: "1234" }; // Cambiar aquí para seguridad real
-
         function handleLogin() {
-            const u = document.getElementById('user-auth').value;
-            const p = document.getElementById('pass-auth').value;
-            if(u === CREDENTIALS.user && p === CREDENTIALS.pass) {
-                notify("Sesión iniciada correctamente", "success");
+            const uInput = document.getElementById('user-auth').value.trim();
+            const pInput = document.getElementById('pass-auth').value;
+            
+            const auth = CREDENTIALS.find(u => u.user === uInput && u.pass === pInput);
+
+            if(auth) {
+                tournament.activeUser = auth.user;
+                document.getElementById('user-welcome').textContent = `SESIÓN: ${auth.org}`;
+                notify(`Bienvenido, ${auth.user}`, "success");
                 showScreen('setup-screen');
                 initPointsConfig();
             } else {
-                notify("Credenciales incorrectas", "error");
+                notify("Usuario o contraseña incorrectos", "error");
             }
         }
 
-       
         function showScreen(id) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
@@ -231,7 +252,6 @@
             tournament.config.rounds = parseInt(document.getElementById('num-rounds').value);
             tournament.config.ptsKill = parseInt(document.getElementById('pts-kill').value);
             
-            // Guardar puntos de posicion configurados
             document.querySelectorAll('.pos-config-input').forEach(input => {
                 tournament.config.ptsPos[input.dataset.pos] = parseInt(input.value || 0);
             });
@@ -299,7 +319,7 @@
                 });
             }
 
-            if(tempUpdates.length === 0) return notify("No hay datos para guardar", "error");
+            if(tempUpdates.length === 0) return notify("Ingresa los datos de la partida", "error");
 
             tempUpdates.forEach(upd => {
                 const team = tournament.teams.find(t => t.id === upd.tid);
@@ -310,19 +330,19 @@
 
             if(tournament.currentRound < tournament.config.rounds) {
                 tournament.currentRound++;
-                notify("Partida registrada", "success");
+                notify("Puntos agregados", "success");
                 renderRoundEntry();
             } else {
                 tournament.isFinished = true;
-                notify("¡Torneo Finalizado!", "success");
-                document.getElementById('stat-status').textContent = "Finalizado";
+                notify("¡ scrims finalizadas!", "success");
+                document.getElementById('stat-status').textContent = "FINALIZADO";
                 document.getElementById('stat-status').className = "text-sm font-black text-yellow-500 uppercase";
             }
             saveAndRefresh();
         }
 
         function saveAndRefresh() {
-            localStorage.setItem('lcs_data', JSON.stringify(tournament));
+            localStorage.setItem('lcs_pro_data', JSON.stringify(tournament));
             updateLeaderboard();
         }
 
@@ -341,10 +361,10 @@
             body.innerHTML = sorted.map((t, i) => `
                 <tr class="border-b border-white/5 hover:bg-white/5 transition">
                     <td class="py-4 font-black ${i < 3 ? 'text-green-500' : 'text-slate-500'}">${i+1}º</td>
-                    <td class="py-4 font-bold">${t.name}</td>
+                    <td class="py-4 font-bold text-slate-200">${t.name}</td>
                     <td class="py-4 text-center text-slate-400">${t.ptsPos}</td>
                     <td class="py-4 text-center text-slate-400">${t.ptsKill}</td>
-                    <td class="py-4 text-right font-black text-white text-lg">${t.total}</td>
+                    <td class="py-4 text-right font-black text-green-400 text-lg">${t.total}</td>
                 </tr>
             `).join('');
         }
@@ -360,22 +380,24 @@
 
         function copyTable() {
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
-            let text = `🏆 *RESULTADOS* 🏆\n📍 Partida: ${tournament.currentRound}/${tournament.config.rounds}\n\n`;
+            const userTag = tournament.activeUser || "ADMIN";
+            let text = `🏆 *RESULTADOS - ${userTag}* 🏆\n📍 Partida: ${tournament.currentRound}/${tournament.config.rounds}\n\n`;
             sorted.forEach((t, i) => {
-                text += `${i+1}º | ${t.name.padEnd(12)} | ${t.total} pts\n`;
+                text += `${i+1}º | ${t.name.padEnd(14)} | ${t.total} PTS\n`;
             });
+            text += "\n_Generado por OPEN System_";
             navigator.clipboard.writeText(text);
-            notify("Copiado al portapapeles", "success");
+            notify("Tabla copiada", "success");
         }
 
         function confirmReset() {
-            if(confirm("¿Estás seguro de que deseas borrar todos los datos del torneo?")) {
-                localStorage.removeItem('lcs_data');
+            if(confirm("¿Estás seguro? Se borrarán todos los puntos y equipos.")) {
+                localStorage.removeItem('lcs_pro_data');
                 location.reload();
             }
         }
 
-        // Auto-load if data exists
+        // Recuperar sesión si el usuario ya estaba logueado
         window.onload = () => {
             if(tournament.teams.length > 0) {
                 showScreen('main-screen');
@@ -386,6 +408,5 @@
     </script>
 </body>
 </html>
-
 
 
