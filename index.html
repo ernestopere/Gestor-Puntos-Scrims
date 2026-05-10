@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open - Tournament Manager - </title>
+    <title>Open - Tournament Manager - PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -99,7 +99,7 @@
                 <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Configuración Global</h2>
                 <p id="user-welcome" class="text-green-500 text-xs font-bold uppercase tracking-widest"></p>
             </div>
-            <button onclick="location.reload()" class="text-xs text-slate-500 hover:text-white uppercase font-bold">Cerrar Sesión</button>
+            <button onclick="logout()" class="text-xs text-slate-500 hover:text-white uppercase font-bold">Cerrar Sesión</button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -167,7 +167,7 @@
             <div class="lg:col-span-4 glass-panel p-6 h-fit">
                 <div class="flex justify-between items-end mb-6">
                     <h3 class="font-bold uppercase tracking-tighter">Puntaje Partida <span id="round-title" class="text-green-500">#1</span></h3>
-                    <div class="flex gap-8 text-[9px] font-black text-slate-500 uppercase mr-2">
+                    <div class="flex gap-7 text-[9px] font-black text-slate-500 uppercase mr-1">
                         <span>Pos</span>
                         <span>Kill</span>
                     </div>
@@ -182,6 +182,7 @@
                     <div class="flex flex-wrap gap-2">
                         <button onclick="exportToExcel()" class="bg-green-600/20 hover:bg-green-600/40 text-green-500 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest border border-green-500/30">Exportar Excel</button>
                         <button onclick="copyTable()" class="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest">Copiar Texto</button>
+                        <button onclick="logout()" class="bg-slate-700/40 hover:bg-slate-700/60 text-slate-300 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest">Cerrar Sesión</button>
                         <button onclick="confirmReset()" class="bg-red-500/10 hover:bg-red-500/20 text-red-500 px-4 py-2 rounded-lg text-[10px] font-bold transition uppercase tracking-widest">Borrar Todo</button>
                     </div>
                 </div>
@@ -214,7 +215,7 @@
             { user: "Vanny", pass: "circle2026", org: "OPEN CIRCLE" }
         ];
 
-        let tournament = JSON.parse(localStorage.getItem('lcs_pro_data')) || {
+        let tournament = JSON.parse(localStorage.getItem('_pro_data')) || {
             config: { teams: 16, rounds: 3, ptsKill: 1, ptsPos: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1} },
             currentRound: 1,
             teams: [],
@@ -226,14 +227,32 @@
             const uInput = document.getElementById('user-auth').value.trim();
             const pInput = document.getElementById('pass-auth').value;
             const auth = CREDENTIALS.find(u => u.user === uInput && u.pass === pInput);
+            
             if(auth) {
                 tournament.activeUser = auth.user;
+                tournament.activeOrg = auth.org;
+                localStorage.setItem('_pro_data', JSON.stringify(tournament));
                 document.getElementById('user-welcome').textContent = `SESIÓN: ${auth.org}`;
                 notify(`Bienvenido, ${auth.user}`, "success");
-                showScreen('setup-screen');
-                initPointsConfig();
+                
+                if(tournament.teams.length > 0) {
+                    showScreen('main-screen');
+                    updateLeaderboard();
+                    if(!tournament.isFinished) renderRoundEntry();
+                } else {
+                    showScreen('setup-screen');
+                    initPointsConfig();
+                }
             } else {
                 notify("Usuario o contraseña incorrectos", "error");
+            }
+        }
+
+        function logout() {
+            if(confirm("¿Deseas cerrar la sesión actual?")) {
+                tournament.activeUser = null;
+                localStorage.setItem('_pro_data', JSON.stringify(tournament));
+                location.reload();
             }
         }
 
@@ -290,8 +309,8 @@
                     <span class="text-xs font-bold text-slate-500 w-4">${t.id}</span>
                     <span class="flex-1 font-bold text-slate-200 truncate text-sm">${t.name}</span>
                     <div class="flex gap-2">
-                        <input type="number" data-id="${t.id}" class="pos-in input-field w-12 py-1 px-0 text-center text-sm" min="1">
-                        <input type="number" data-id="${t.id}" class="kill-in input-field w-12 py-1 px-0 text-center text-sm border-green-900/30" min="0">
+                        <input type="number" data-id="${t.id}" class="pos-in input-field w-12 py-1 px-0 text-center text-sm" placeholder="Pos" min="1">
+                        <input type="number" data-id="${t.id}" class="kill-in input-field w-12 py-1 px-0 text-center text-sm border-green-900/30" placeholder="Kill" min="0">
                     </div>
                 </div>
             `).join('');
@@ -398,10 +417,18 @@
         }
 
         window.onload = () => {
-            if(tournament.teams.length > 0) {
-                showScreen('main-screen');
-                updateLeaderboard();
-                if(!tournament.isFinished) renderRoundEntry();
+            if(tournament.activeUser) {
+                document.getElementById('user-welcome').textContent = `SESIÓN: ${tournament.activeOrg}`;
+                if(tournament.teams.length > 0) {
+                    showScreen('main-screen');
+                    updateLeaderboard();
+                    if(!tournament.isFinished) renderRoundEntry();
+                } else {
+                    showScreen('setup-screen');
+                    initPointsConfig();
+                }
+            } else {
+                showScreen('login-screen');
             }
         }
     </script>
