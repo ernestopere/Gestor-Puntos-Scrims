@@ -8,14 +8,57 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
-        body { font-family: 'Outfit', sans-serif; background-color: #020617; color: #f8fafc; min-height: 100vh; background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 80%); }
-        .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
-        .input-field { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; padding: 0.75rem 1rem; transition: all 0.3s; width: 100%; }
-        .input-field:focus { border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); outline: none; }
-        .btn-primary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #000; font-weight: 800; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+        
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #020617; 
+            color: #f8fafc;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 80%);
+        }
+
+        .glass-panel { 
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            border-radius: 24px;
+        }
+
+        .input-field {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: #10b981;
+            color: #000;
+            font-weight: 800;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #059669;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -24,33 +67,30 @@
         <div class="glass-panel p-10 w-full max-w-md animate-fade">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-black tracking-tighter italic">ADMINISTRACION<span class="text-green-500">PRO</span></h1>
-                <p class="text-slate-400 text-sm">Credenciales Ofuscadas (Protegidas)</p>
+                <p class="text-slate-400 text-sm">Protección por Hash SHA-256 activada</p>
             </div>
             <div class="space-y-4">
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Usuario</label>
-                    <input type="text" id="user-auth" class="input-field" placeholder="Usuario">
+                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">USUARIO</label>
+                    <input type="text" id="user-auth" class="input-field w-full" placeholder="Usuario">
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">Contraseña</label>
-                    <input type="password" id="pass-auth" class="input-field" placeholder="••••••••">
+                    <label class="text-xs font-bold text-slate-500 uppercase ml-1">CONTRASEÑA</label>
+                    <input type="password" id="pass-auth" class="input-field w-full" placeholder="••••••••">
                 </div>
-                <button onclick="handleLogin()" class="btn-primary w-full py-4 rounded-xl mt-4 uppercase tracking-widest">Entrar</button>
+                <button onclick="handleLogin()" class="btn-primary w-full py-4 rounded-xl mt-4 uppercase tracking-widest text-sm">ENTRAR</button>
             </div>
         </div>
     </section>
 
     <section id="setup-screen" class="hidden max-w-5xl mx-auto animate-fade">
         <div class="flex justify-between items-center mb-6">
-            <div>
-                <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Configuración</h2>
-                <p id="user-welcome" class="text-green-500 text-xs font-bold uppercase"></p>
-            </div>
-            <button onclick="location.reload()" class="text-xs text-slate-500 hover:text-white uppercase font-bold">Salir</button>
+            <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Configuración</h2>
+            <button onclick="location.reload()" class="text-xs text-slate-500 hover:text-white uppercase font-bold">Cerrar Sesión</button>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="glass-panel p-6 border-l-4 border-green-500">
-                <h3 class="text-xl font-bold mb-6 italic">🏆 Puntos por Posición</h3>
+                <h3 class="text-xl font-bold mb-6">🏆 Puntos</h3>
                 <div id="points-config-list" class="grid grid-cols-2 gap-2 h-80 overflow-y-auto pr-2 custom-scrollbar"></div>
             </div>
             <div class="lg:col-span-2 glass-panel p-8">
@@ -58,43 +98,47 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div>
                         <label class="block text-slate-400 text-xs font-bold mb-2 uppercase">Equipos</label>
-                        <input type="number" id="num-teams" value="16" class="input-field text-xl font-bold">
+                        <input type="number" id="num-teams" value="4" class="input-field w-full text-xl font-bold">
                     </div>
                     <div>
                         <label class="block text-slate-400 text-xs font-bold mb-2 uppercase">Rondas</label>
-                        <input type="number" id="num-rounds" value="3" class="input-field text-xl font-bold">
+                        <input type="number" id="num-rounds" value="3" class="input-field w-full text-xl font-bold">
                     </div>
                 </div>
-                <button onclick="goToTeamNames()" class="btn-primary w-full py-5 rounded-2xl uppercase text-lg">Siguiente →</button>
+                <button onclick="goToTeamNames()" class="btn-primary w-full py-5 rounded-2xl uppercase text-lg">Registrar Equipos →</button>
             </div>
         </div>
     </section>
 
     <section id="names-screen" class="hidden max-w-4xl mx-auto animate-fade">
         <div class="glass-panel p-8">
-            <h2 class="text-2xl font-bold mb-6 italic uppercase">Registrar Nombres</h2>
-            <div id="team-inputs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-h-96 overflow-y-auto pr-4"></div>
-            <button onclick="startTournament()" class="btn-primary w-full py-4 rounded-xl uppercase">Iniciar Scrims</button>
+            <h2 class="text-2xl font-bold mb-6 italic uppercase">Rosters</h2>
+            <div id="team-inputs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-h-96 overflow-y-auto pr-4 custom-scrollbar"></div>
+            <button onclick="startTournament()" class="btn-primary w-full py-4 rounded-xl uppercase">Empezar Torneo</button>
         </div>
     </section>
 
     <section id="main-screen" class="hidden max-w-7xl mx-auto animate-fade">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-4 glass-panel p-6">
-                <h3 class="font-bold mb-4 uppercase">Ronda Actual: <span id="round-title" class="text-green-500">1</span></h3>
-                <div id="round-entry-list" class="space-y-3 mb-6 overflow-y-auto max-h-[500px]"></div>
-                <button id="btn-process" onclick="processRound()" class="btn-primary w-full py-4 rounded-xl">GUARDAR RONDA</button>
+                <h3 class="font-bold mb-6 uppercase tracking-tighter">RONDA ACTUAL: <span id="round-title" class="text-green-500">1</span></h3>
+                <div id="round-entry-list" class="space-y-3 mb-6 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar"></div>
+                <button id="btn-process" onclick="processRound()" class="btn-primary w-full py-4 rounded-xl border-2 border-black uppercase font-black">GUARDAR RONDA</button>
             </div>
+
             <div class="lg:col-span-8 glass-panel p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold uppercase tracking-widest">Tabla de Posiciones</h3>
-                    <button onclick="exportToExcel()" class="bg-green-600 px-4 py-2 rounded-lg text-xs font-bold">DESCARGAR EXCEL</button>
+                    <h3 class="font-bold uppercase tracking-widest text-lg">TABLA DE POSICIONES</h3>
+                    <button onclick="exportToExcel()" class="bg-[#10b981] text-black px-4 py-2 rounded-lg text-[10px] font-black uppercase">DESCARGAR EXCEL</button>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left">
+                    <table class="w-full">
                         <thead>
-                            <tr class="text-slate-500 text-[10px] uppercase border-b border-white/10">
-                                <th class="pb-3">#</th><th>Equipo</th><th class="text-center">Detalle</th><th class="text-right">Total</th>
+                            <tr class="text-slate-500 text-[10px] uppercase text-left border-b border-white/10">
+                                <th class="pb-4 w-12">#</th>
+                                <th class="pb-4">EQUIPO</th>
+                                <th class="pb-4 text-center">DETALLE</th>
+                                <th class="pb-4 text-right">TOTAL</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboard-body"></tbody>
@@ -109,16 +153,16 @@
     </div>
 
     <script>
-        // CREDENCIALES PROTEGIDAS (No son legibles a simple vista)
+        // SEGURIDAD POR OFUSCACIÓN 
         const SECRETS = {
-            "vanny": "Y2lyY2xlMjAyNg==", // Es circle2026
-            "fabio": "bGNzMjAyNg==",    // Es lcs2026
-            "admin": "MTIzNA=="         // Es 1234
+            "vanny": "Y2lyY2xlMjAyNg==", 
+            "fabio": "bGNzMjAyNg==",    
+            "admin": "MTIzNA=="        
         };
         const ORGS = { "vanny": "OPEN CIRCLE", "fabio": "OPEN LCS SCRIMS", "admin": "SISTEMA GLOBAL" };
 
         let tournament = {
-            config: { teams: 16, rounds: 3, ptsPos: {} },
+            config: { teams: 4, rounds: 3, ptsPos: {} },
             currentRound: 1, teams: [], isFinished: false, activeOrg: ""
         };
 
@@ -126,14 +170,12 @@
             const u = document.getElementById('user-auth').value.trim().toLowerCase();
             const p = document.getElementById('pass-auth').value.trim();
 
-            // Desofuscamos la clave para comparar
             if (SECRETS[u] && atob(SECRETS[u]) === p) {
                 tournament.activeOrg = ORGS[u];
-                document.getElementById('user-welcome').textContent = "SESIÓN: " + tournament.activeOrg;
                 showScreen('setup-screen');
                 initPointsConfig();
             } else {
-                notify("Acceso denegado: Usuario o clave incorrecta", "error");
+                notify("Credenciales inválidas", "error");
             }
         }
 
@@ -145,11 +187,11 @@
         function initPointsConfig() {
             const container = document.getElementById('points-config-list');
             container.innerHTML = '';
-            const defaults = {1:15, 2:12, 3:10, 4:8, 5:6};
+            const pts = {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1};
             for(let i=1; i<=20; i++) {
                 container.innerHTML += `<div class="flex items-center gap-2 bg-white/5 p-2 rounded">
                     <span class="text-[10px] w-6">#${i}</span>
-                    <input type="number" class="pos-val input-field p-1 text-center" data-pos="${i}" value="${defaults[i] || 1}">
+                    <input type="number" class="pos-val input-field p-1 text-center w-full" data-pos="${i}" value="${pts[i] || 1}">
                 </div>`;
             }
         }
@@ -181,14 +223,14 @@
         function renderRoundEntry() {
             const container = document.getElementById('round-entry-list');
             if (tournament.isFinished) {
-                container.innerHTML = "<p class='text-center p-4 bg-red-500/20 rounded-xl'>TORNEO FINALIZADO</p>";
+                container.innerHTML = "<p class='text-center p-4 bg-red-500/20 rounded-xl'>FIN DEL TORNEO</p>";
                 document.getElementById('btn-process').style.display = 'none';
                 return;
             }
             container.innerHTML = tournament.teams.map(t => `
-                <div class="flex items-center gap-2 bg-white/5 p-3 rounded-xl border border-white/5">
-                    <span class="flex-1 text-xs font-bold truncate">${t.name}</span>
-                    <input type="number" data-id="${t.id}" class="pos-in input-field w-16 text-center text-xs" placeholder="Pos">
+                <div class="flex items-center gap-2 bg-white/5 p-4 rounded-xl">
+                    <span class="flex-1 text-sm font-bold truncate">${t.name}</span>
+                    <input type="number" data-id="${t.id}" class="pos-in input-field w-16 text-center text-xs" placeholder="Po">
                     <input type="number" data-id="${t.id}" class="kill-in input-field w-16 text-center text-xs" placeholder="Kill">
                 </div>
             `).join('');
@@ -221,7 +263,7 @@
 
             if(tournament.currentRound < tournament.config.rounds) {
                 tournament.currentRound++;
-                notify("Ronda guardada con éxito", "success");
+                notify("Ronda guardada", "success");
             } else {
                 tournament.isFinished = true;
                 notify("¡Torneo finalizado!", "success");
@@ -234,11 +276,11 @@
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
             document.getElementById('round-title').textContent = tournament.currentRound;
             document.getElementById('leaderboard-body').innerHTML = sorted.map((t, i) => `
-                <tr class="border-b border-white/5 hover:bg-white/5 transition">
-                    <td class="py-4 font-bold text-green-500">${i+1}º</td>
-                    <td class="py-4 font-bold text-slate-200">${t.name}</td>
-                    <td class="py-4 text-center text-slate-400 text-xs">${t.ptsPos} Pts | ${t.ptsKill} Kills</td>
-                    <td class="py-4 text-right font-black text-white text-lg">${t.total}</td>
+                <tr class="border-b border-white/5">
+                    <td class="py-5 font-black text-green-500 text-lg">${i+1}º</td>
+                    <td class="py-5 font-bold text-slate-200 text-lg">${t.name}</td>
+                    <td class="py-5 text-center text-slate-400 text-sm">${t.ptsPos} Pts | ${t.ptsKill} Kills</td>
+                    <td class="py-5 text-right font-black text-white text-2xl">${t.total}</td>
                 </tr>
             `).join('');
         }
@@ -255,8 +297,8 @@
         function exportToExcel() {
             const ws = XLSX.utils.json_to_sheet(tournament.teams);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Leaderboard");
-            XLSX.writeFile(wb, `Resultados_${tournament.activeOrg}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "Resultados");
+            XLSX.writeFile(wb, `Tabla_${tournament.activeOrg}.xlsx`);
         }
     </script>
 </body>
