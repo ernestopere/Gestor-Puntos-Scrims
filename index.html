@@ -3,65 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open - Tournament Manager</title>
+    <title>Open PRO Scrims - Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
-        
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background-color: #050505; 
-            color: #f8fafc;
-            min-height: 100vh;
-            padding: 20px;
-            background-image: radial-gradient(circle at center, #1a202c 0%, #000000 100%);
-        }
-
-        .main-card { 
-            background: rgba(20, 20, 20, 0.7); 
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 24px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .input-field {
-            background: rgba(10, 10, 10, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: white;
-            border-radius: 12px;
-            padding: 1rem;
-            width: 100%;
-            transition: all 0.2s;
-        }
-
-        .input-field:focus {
-            border-color: #10b981; 
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
-        }
-
-        .bg-action-button { background-color: #10b981; color: black; }
-        .bg-action-button:hover { background-color: #059669; }
-        
-        .stat-box {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 1.5rem;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .leader-box {
-            border: 1px solid rgba(16, 185, 129, 0.4);
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        
-        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: 'Outfit', sans-serif; background-color: #050505; color: #f8fafc; min-height: 100vh; padding: 20px; background-image: radial-gradient(circle at center, #1a202c 0%, #000000 100%); }
+        .main-card { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
+        .input-field { background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: white; border-radius: 12px; padding: 1rem; width: 100%; }
+        .bg-action-button { background-color: #10b981; color: black; font-weight: 800; }
+        .stat-box { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body class="flex flex-col items-center">
@@ -74,94 +24,52 @@
     </header>
 
     <div id="app" class="w-full max-w-6xl">
-        
-        <section id="login-screen" class="main-card p-10 max-w-md mx-auto animate-fade">
-            <div class="text-center mb-8">
-                <h2 class="text-xl font-bold uppercase tracking-widest text-green-500">Acceso Privado</h2>
-                <p class="text-slate-500 text-xs mt-2">Introduce tus credenciales de Administrador</p>
-            </div>
+        <section id="login-screen" class="main-card p-10 max-w-md mx-auto">
+            <h2 class="text-xl font-bold uppercase text-center text-green-500 mb-6">Administración PRO</h2>
             <div class="space-y-4">
                 <input type="text" id="user-auth" class="input-field" placeholder="Usuario">
                 <input type="password" id="pass-auth" class="input-field" placeholder="Contraseña">
-                <button onclick="handleLogin()" class="w-full bg-action-button font-black py-4 rounded-xl uppercase tracking-widest transition-all">Entrar</button>
+                <button onclick="handleLogin()" class="w-full bg-action-button py-4 rounded-xl uppercase">Entrar</button>
             </div>
         </section>
 
-        <section id="setup-screen" class="hidden main-card p-8 max-w-5xl mx-auto animate-fade">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-1 border-r border-white/10 pr-4">
-                    <h3 class="text-sm font-bold text-green-500 uppercase mb-4 tracking-widest">Puntos Manuales</h3>
-                    <div id="manual-points-container" class="grid grid-cols-1 gap-2 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                        </div>
-                </div>
-
-                <div class="lg:col-span-2">
-                    <div class="flex items-center gap-4 mb-8">
-                        <div class="bg-slate-800 p-3 rounded-xl">⚙️</div>
-                        <h2 class="text-2xl font-bold">Configuración del Torneo</h2>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                        <div>
-                            <label class="block text-slate-400 text-sm mb-3">Número de Equipos</label>
-                            <input type="number" id="num-teams" value="16" class="input-field text-xl font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-slate-400 text-sm mb-3">Total de Partidas</label>
-                            <input type="number" id="num-rounds" value="3" class="input-field text-xl font-bold">
-                        </div>
-                    </div>
-                    <button onclick="goToTeamNames()" class="w-full bg-white hover:bg-slate-200 text-black font-extrabold py-5 rounded-2xl transition-all uppercase tracking-wider shadow-lg">
-                        Siguiente: Registro de Equipos →
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <section id="names-screen" class="hidden main-card p-8 max-w-4xl mx-auto animate-fade">
-            <h2 class="text-2xl font-bold mb-8 uppercase tracking-tighter">Registrar Rosters</h2>
-            <div id="team-inputs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"></div>
-            <div class="flex gap-4">
-                <button onclick="showScreen('setup-screen')" class="flex-1 bg-slate-800 hover:bg-slate-700 font-bold py-4 rounded-2xl transition">Atrás</button>
-                <button onclick="startTournament()" class="flex-[2] bg-action-button font-bold py-4 rounded-2xl uppercase tracking-widest transition shadow-lg shadow-green-500/20">Iniciar Torneo</button>
-            </div>
-        </section>
-
-        <section id="main-screen" class="hidden space-y-6 animate-fade">
+        <section id="main-screen" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="stat-box main-card">
-                    <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Partida</p>
+                    <p class="text-slate-400 text-xs uppercase mb-1">Partida</p>
                     <p id="stat-round" class="text-4xl font-extrabold text-white">1/3</p>
                 </div>
-                <div class="stat-box main-card leader-box">
-                    <p class="text-green-400 text-xs uppercase tracking-widest mb-1">Top 1 Actual</p>
+                <div class="stat-box main-card border border-green-500/30">
+                    <p class="text-green-400 text-xs uppercase mb-1">Top 1 Actual</p>
                     <p id="stat-leader" class="text-3xl font-extrabold text-white truncate">---</p>
                 </div>
                 <div class="stat-box main-card">
-                    <p class="text-slate-400 text-xs uppercase tracking-widest mb-1">Estado</p>
-                    <p id="stat-status" class="text-xl font-bold text-green-400 uppercase tracking-tighter">En curso</p>
+                    <p class="text-slate-400 text-xs uppercase mb-1">Estado</p>
+                    <p id="stat-status" class="text-xl font-bold text-green-400 uppercase">En curso</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 main-card p-6 border-t-4 border-green-500">
-                    <h2 class="text-xl font-bold uppercase mb-6">Cargar Ronda <span id="round-num-indicator" class="text-green-500">#1</span></h2>
-                    <div id="round-entry-list" class="space-y-3 mb-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"></div>
-                    <button onclick="processRound()" class="w-full bg-action-button hover:bg-green-600 text-black py-4 rounded-xl font-bold uppercase transition-all shadow-lg">Confirmar y Guardar</button>
+                    <h2 class="text-xl font-bold uppercase mb-6 italic">Cargar Ronda <span id="round-num-indicator">#1</span></h2>
+                    <div id="round-entry-list" class="space-y-3 mb-6 max-h-[500px] overflow-y-auto pr-2"></div>
+                    <button id="btn-save" onclick="processRound()" class="w-full bg-action-button py-4 rounded-xl uppercase">Confirmar y Guardar</button>
                 </div>
 
                 <div class="lg:col-span-8 main-card p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold uppercase italic">Tabla General</h2>
-                        <button onclick="copyTable()" class="bg-slate-800 text-xs px-5 py-2 rounded-full font-bold uppercase border border-slate-600">Copiar Resultados</button>
+                        <button onclick="copyTable()" class="bg-slate-800 text-xs px-5 py-2 rounded-full border border-slate-600">COPIAR RESULTADOS</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
-                            <thead class="text-slate-500 text-xs uppercase border-b border-slate-800">
+                            <thead class="text-slate-500 text-[10px] uppercase border-b border-slate-800">
                                 <tr>
-                                    <th class="pb-4 pl-2">Pos</th>
+                                    <th class="pb-4">Pos</th>
                                     <th class="pb-4">Equipo</th>
-                                    <th class="pb-4 text-center">Detalle (P|K)</th>
-                                    <th class="pb-4 text-right pr-2">Total</th>
+                                    <th class="pb-4 text-center">Pts Posición</th>
+                                    <th class="pb-4 text-center">Kills</th>
+                                    <th class="pb-4 text-right">Total</th>
                                 </tr>
                             </thead>
                             <tbody id="leaderboard-body" class="divide-y divide-slate-800/50"></tbody>
@@ -169,192 +77,101 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="flex justify-center pb-10">
-                <button onclick="confirmReset()" class="text-slate-600 hover:text-red-500 text-xs uppercase font-bold tracking-widest transition-all">🗑️ Reiniciar todo el sistema</button>
+            <div class="text-center">
+                <button onclick="confirmReset()" class="text-slate-600 hover:text-red-500 text-xs uppercase font-bold">🗑️ Reiniciar todo el sistema</button>
             </div>
         </section>
     </div>
 
-    <div id="notification" class="fixed bottom-10 right-10 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
-        <div id="notif-box" class="px-8 py-4 rounded-2xl font-bold shadow-2xl text-white"></div>
-    </div>
-
     <script>
-        // CONFIGURACIÓN DE SEGURIDAD (Ofuscada)
-        const AUTH = {
-            "vanny": "Y2lyY2xlMjAyNg==", // circle2026
-            "fabio": "bGNzMjAyNg==",    // lcs2026
-            "admin": "MTIzNA=="         // 1234
-        };
+        const AUTH = { "vanny": "Y2lyY2xlMjAyNg==", "fabio": "bGNzMjAyNg==", "admin": "MTIzNA==" };
+        let tournament = { currentRound: 1, maxRounds: 3, isFinished: false, teams: [], pointsConfig: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1} };
 
-        let tournament = {
-            config: { teams: 0, rounds: 0, points: {} },
-            currentRound: 1,
-            teams: []
-        };
+        // SEGURIDAD: Cierra sesión al salir o refrescar
+        window.addEventListener('beforeunload', () => { sessionStorage.removeItem('activeSession'); });
 
         function handleLogin() {
             const u = document.getElementById('user-auth').value.trim().toLowerCase();
             const p = document.getElementById('pass-auth').value.trim();
             if (AUTH[u] && atob(AUTH[u]) === p) {
-                showScreen('setup-screen');
-                renderManualPoints();
-            } else {
-                notify("Credenciales incorrectas", true);
-            }
+                sessionStorage.setItem('activeSession', 'true');
+                initTournament();
+                showScreen('main-screen');
+            } else { alert("Credenciales inválidas"); }
         }
 
-        function renderManualPoints() {
-            const container = document.getElementById('manual-points-container');
-            container.innerHTML = '';
-            // Pre-llenado con valores comunes pero editables
-            const base = [15, 12, 10, 8, 6, 4, 2];
-            for(let i=1; i<=25; i++) {
-                container.innerHTML += `
-                    <div class="flex items-center gap-3 bg-white/5 p-2 rounded-lg border border-white/5">
-                        <span class="text-[10px] font-bold text-slate-500 w-8">POS ${i}</span>
-                        <input type="number" class="manual-pt-input bg-black border border-white/10 rounded px-2 py-1 text-sm w-full text-green-400 font-bold" 
-                        data-pos="${i}" value="${base[i-1] || (i <= 16 ? 1 : 0)}">
-                    </div>
-                `;
-            }
-        }
-
-        function showScreen(id) {
-            ['login-screen', 'setup-screen', 'names-screen', 'main-screen'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function goToTeamNames() {
-            tournament.config.teams = parseInt(document.getElementById('num-teams').value);
-            tournament.config.rounds = parseInt(document.getElementById('num-rounds').value);
-            
-            // Guardar puntos manuales
-            document.querySelectorAll('.manual-pt-input').forEach(input => {
-                tournament.config.points[input.dataset.pos] = parseInt(input.value || 0);
-            });
-
-            const grid = document.getElementById('team-inputs-grid');
-            grid.innerHTML = '';
-            for(let i=1; i <= tournament.config.teams; i++) {
-                grid.innerHTML += `
-                    <div class="relative">
-                        <span class="absolute left-3 top-3 text-slate-500 text-[10px] font-bold uppercase">Slot ${i}</span>
-                        <input type="text" class="input-field team-name-input pt-7 pb-2 font-bold" value="Team ${i}">
-                    </div>
-                `;
-            }
-            showScreen('names-screen');
-        }
-
-        function startTournament() {
-            const nameInputs = document.querySelectorAll('.team-name-input');
-            tournament.teams = Array.from(nameInputs).map((input, idx) => ({
-                id: idx + 1,
-                name: input.value || `Equipo ${idx + 1}`,
-                ptsPos: 0,
-                ptsKill: 0,
-                total: 0
-            }));
-            updateUI();
+        function initTournament() {
+            tournament.teams = Array.from({length: 16}, (_, i) => ({ id: i+1, name: `Team ${i+1}`, ptsPos: 0, ptsKill: 0, total: 0 }));
             renderRoundEntry();
-            showScreen('main-screen');
+            updateUI();
         }
 
         function renderRoundEntry() {
             const list = document.getElementById('round-entry-list');
             list.innerHTML = tournament.teams.map(t => `
                 <div class="flex items-center gap-2 bg-black/40 p-3 rounded-xl border border-white/5">
-                    <span class="flex-1 text-xs font-bold truncate text-slate-300">${t.name}</span>
-                    <input type="number" placeholder="Pos" data-id="${t.id}" class="pos-in bg-slate-900 border border-slate-700 rounded-lg text-white text-center w-14 py-2 text-sm outline-none focus:border-green-500">
-                    <input type="number" placeholder="Kills" data-id="${t.id}" class="kills-in bg-slate-900 border border-slate-700 rounded-lg text-green-400 font-bold text-center w-14 py-2 text-sm outline-none focus:border-green-500">
+                    <span class="flex-1 text-xs font-bold text-slate-300">${t.name}</span>
+                    <input type="number" placeholder="Pos" data-id="${t.id}" class="pos-in bg-slate-900 border border-slate-700 rounded-lg text-white text-center w-14 py-2 text-sm outline-none">
+                    <input type="number" placeholder="Kills" data-id="${t.id}" class="kills-in bg-slate-900 border border-slate-700 rounded-lg text-green-400 font-bold text-center w-14 py-2 text-sm outline-none">
                 </div>
             `).join('');
         }
 
         function processRound() {
+            // CORRECCIÓN: No permite acumular puntos si ya terminó
+            if(tournament.isFinished) return;
+
             const posInputs = document.querySelectorAll('.pos-in');
             const killInputs = document.querySelectorAll('.kills-in');
-            const usedPos = new Set();
-            let valid = true;
-
-            posInputs.forEach(input => {
-                const val = parseInt(input.value);
-                if(val) {
-                    if(val < 1 || val > tournament.config.teams) { notify("Posición inválida", true); valid = false; }
-                    if(usedPos.has(val)) { notify("Posiciones repetidas", true); valid = false; }
-                    usedPos.add(val);
-                }
-            });
-
-            if(!valid || usedPos.size === 0) return;
-
+            
             posInputs.forEach((input, i) => {
-                const teamId = parseInt(input.dataset.id);
+                const team = tournament.teams.find(t => t.id == input.dataset.id);
                 const pos = parseInt(input.value);
                 const kills = parseInt(killInputs[i].value || 0);
                 
                 if(pos) {
-                    const team = tournament.teams.find(t => t.id === teamId);
-                    team.ptsPos += tournament.config.points[pos] || 0;
+                    team.ptsPos += tournament.pointsConfig[pos] || 1;
                     team.ptsKill += kills;
                     team.total = team.ptsPos + team.ptsKill;
                 }
             });
 
-            if(tournament.currentRound < tournament.config.rounds) {
+            if(tournament.currentRound < tournament.maxRounds) {
                 tournament.currentRound++;
-                notify("Ronda guardada", false);
-                updateUI();
                 renderRoundEntry();
             } else {
-                updateUI();
+                tournament.isFinished = true;
                 document.getElementById('stat-status').textContent = "FINALIZADO";
-                document.getElementById('stat-status').className = "text-xl font-bold text-yellow-500 uppercase tracking-tighter";
+                document.getElementById('stat-status').classList.replace('text-green-400', 'text-yellow-500');
+                document.getElementById('btn-save').disabled = true;
+                document.getElementById('btn-save').classList.add('opacity-50');
             }
+            updateUI();
         }
 
         function updateUI() {
-            document.getElementById('stat-round').textContent = `${tournament.currentRound}/${tournament.config.rounds}`;
+            document.getElementById('stat-round').textContent = `${tournament.currentRound}/${tournament.maxRounds}`;
             document.getElementById('round-num-indicator').textContent = `#${tournament.currentRound}`;
-            
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
             document.getElementById('stat-leader').textContent = sorted[0].total > 0 ? sorted[0].name : "---";
 
-            const body = document.getElementById('leaderboard-body');
-            body.innerHTML = sorted.map((t, i) => `
-                <tr class="hover:bg-white/5 transition border-b border-white/5">
-                    <td class="py-4 pl-2 font-black ${i===0?'text-yellow-400 text-lg':''}">${i+1}º</td>
+            document.getElementById('leaderboard-body').innerHTML = sorted.map((t, i) => `
+                <tr class="border-b border-white/5">
+                    <td class="py-4 font-black ${i===0?'text-yellow-400 text-lg':''}">${i+1}º</td>
                     <td class="py-4 font-bold text-slate-200">${t.name}</td>
-                    <td class="py-4 text-center text-slate-500 text-xs">${t.ptsPos} Pts | ${t.ptsKill} Kills</td>
-                    <td class="py-4 text-right pr-2 font-black text-green-400 text-xl">${t.total}</td>
+                    <td class="py-4 text-center text-slate-400 font-bold">${t.ptsPos}</td>
+                    <td class="py-4 text-center text-green-500 font-bold">${t.ptsKill}</td>
+                    <td class="py-4 text-right font-black text-white text-xl">${t.total}</td>
                 </tr>
             `).join('');
         }
 
-        function notify(msg, isError) {
-            const box = document.getElementById('notification');
-            const inner = document.getElementById('notif-box');
-            inner.textContent = msg;
-            inner.className = `px-8 py-4 rounded-2xl font-bold shadow-2xl text-white ${isError ? 'bg-red-500' : 'bg-green-600'}`;
-            box.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => box.classList.add('translate-y-20', 'opacity-0'), 2500);
+        function showScreen(id) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
         }
 
-        function copyTable() {
-            const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
-            let txt = "🏆 OPEN - RESULTADOS 🏆\n\n";
-            sorted.forEach((t, i) => {
-                txt += `${i+1}º | ${t.name} | ${t.total} pts\n`;
-            });
-            navigator.clipboard.writeText(txt);
-            notify("Copiado al portapapeles", false);
-        }
-
-        function confirmReset() {
-            if(confirm("¿Deseas borrar todo el torneo actual?")) location.reload();
-        }
+        function confirmReset() { if(confirm("¿Borrar todo?")) location.reload(); }
     </script>
 </body>
 </html>
