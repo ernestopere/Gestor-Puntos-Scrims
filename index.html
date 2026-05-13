@@ -344,7 +344,7 @@
 
         function copyTable() {
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
-            let txt = "🏆 OPEN LCS SCRIMS - RESULTADOS 🏆\n\n";
+            let txt = "🏆 OPEN - RESULTADOS 🏆\n\n";
             sorted.forEach((t, i) => {
                 txt += `${i+1}º | ${t.name} | ${t.total} pts\n`;
             });
