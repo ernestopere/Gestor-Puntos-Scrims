@@ -40,9 +40,6 @@
             outline: none;
         }
 
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-
         .btn-primary {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: #000;
@@ -78,16 +75,16 @@
         <div class="glass-panel p-10 w-full max-w-md animate-fade">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-black tracking-tighter italic">ADMINISTRACION<span class="text-green-500">PRO</span></h1>
-                <p class="text-slate-400 text-sm">Protección por Hash SHA-256 activada</p>
+                <p class="text-slate-400 text-sm">Seguridad por Hash activada</p>
             </div>
             <div class="space-y-4">
                 <div>
                     <label class="text-xs font-bold text-slate-500 uppercase ml-1">Usuario</label>
-                    <input type="text" id="user-auth" class="input-field w-full">
+                    <input type="text" id="user-auth" class="input-field w-full" placeholder="Ej: admin">
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-500 uppercase ml-1">Contraseña</label>
-                    <input type="password" id="pass-auth" class="input-field w-full">
+                    <input type="password" id="pass-auth" class="input-field w-full" placeholder="••••">
                 </div>
                 <button onclick="handleLogin()" class="btn-primary w-full py-4 rounded-xl mt-4 uppercase tracking-widest">Entrar</button>
             </div>
@@ -203,9 +200,9 @@
     </div>
 
     <script>
-    
+        // CREDENCIALES CON HASH SHA-256 (SEGURAS)
         const CREDENTIALS = [
-            { user: "admin", passHash: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4", org: "SISTEMA GLOBAL" },
+            { user: "admin", passHash: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4", org: "SISTEMA GLOBAL" }, 
             { user: "Fabio", passHash: "1f6927d6d34e902f232491f09c687e14582f3473523588725838426f37651c6c", org: "OPEN LCS SCRIMS" }, 
             { user: "Vanny", passHash: "7c0a7d4323c215d54a2e7c41df3c83095393433604f81c96765796f7e49221bc", org: "OPEN CIRCLE" }    
         ];
@@ -215,16 +212,21 @@
             currentRound: 1,
             teams: [],
             isFinished: false,
-            activeUser: null
+            activeUser: null,
+            activeOrg: ""
         };
 
         function handleLogin() {
             const uInput = document.getElementById('user-auth').value.trim();
-            const pInput = document.getElementById('pass-auth').value;
+            const pInput = document.getElementById('pass-auth').value.trim();
             
-            // Convertimos lo que el usuario escribe a Hash para comparar
+            if (typeof CryptoJS === 'undefined') {
+                alert("Error: Conéctate a internet para cargar el sistema de seguridad.");
+                return;
+            }
+
             const inputHash = CryptoJS.SHA256(pInput).toString();
-            const auth = CREDENTIALS.find(u => u.user === uInput && u.passHash === inputHash);
+            const auth = CREDENTIALS.find(u => u.user.toLowerCase() === uInput.toLowerCase() && u.passHash === inputHash);
             
             if(auth) {
                 tournament.activeUser = auth.user;
@@ -239,13 +241,15 @@
                     showScreen('setup-screen');
                     initPointsConfig();
                 }
-            } else { notify("Credenciales inválidas", "error"); }
+            } else { 
+                notify("Credenciales incorrectas", "error"); 
+            }
         }
 
         function saveData() { sessionStorage.setItem('_pro_data', JSON.stringify(tournament)); }
 
         function logout() {
-            if(confirm("¿Cerrar sesión?")) {
+            if(confirm("¿Cerrar sesión? Los datos se borrarán.")) {
                 sessionStorage.removeItem('_pro_data');
                 location.reload();
             }
@@ -329,17 +333,14 @@
                 if (input.value.trim() === "" || killInputs[i].value.trim() === "") allFilled = false;
             });
 
-            if (!allFilled) {
-                notify("Faltan campos por completar", "error");
-                return;
-            }
+            if (!allFilled) { notify("Completa todos los campos", "error"); return; }
 
             let seenPos = new Set();
             let errorMsg = "";
             for (let input of posInputs) {
                 const p = parseInt(input.value);
-                if (p > maxTeams || p < 1) { errorMsg = `Posición ${p} fuera de rango (Max: ${maxTeams})`; break; }
-                if (seenPos.has(p)) { errorMsg = `La posición ${p} está duplicada`; break; }
+                if (p > maxTeams || p < 1) { errorMsg = `Posición ${p} inválida (Máx: ${maxTeams})`; break; }
+                if (seenPos.has(p)) { errorMsg = `La posición ${p} está repetida`; break; }
                 seenPos.add(p);
             }
 
@@ -356,7 +357,7 @@
 
             if (tournament.currentRound < tournament.config.rounds) {
                 tournament.currentRound++;
-                notify("Ronda registrada", "success");
+                notify("Ronda guardada", "success");
             } else {
                 tournament.isFinished = true;
                 notify("Torneo finalizado", "success");
