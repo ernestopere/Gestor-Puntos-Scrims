@@ -7,11 +7,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
-        body { font-family: 'Outfit', sans-serif; background-color: #050505; color: #f8fafc; min-height: 100vh; padding: 20px; background-image: radial-gradient(circle at center, #1a202c 0%, #000000 100%); }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #050505; 
+            color: #f8fafc; 
+            min-height: 100vh; 
+            padding: 20px; 
+            background-image: radial-gradient(circle at center, #1a202c 0%, #000000 100%); 
+        }
         .main-card { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
-        .input-field { background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: white; border-radius: 12px; padding: 1rem; width: 100%; }
-        .bg-action-button { background-color: #10b981; color: black; font-weight: 800; }
+        .input-field { background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: white; border-radius: 12px; padding: 1rem; width: 100%; outline: none; }
+        .input-field:focus { border-color: #10b981; }
+        .bg-action-button { background-color: #10b981; color: black; font-weight: 800; transition: all 0.3s; }
+        .bg-action-button:hover { background-color: #059669; transform: scale(1.02); }
         .stat-box { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body class="flex flex-col items-center">
@@ -25,12 +36,27 @@
 
     <div id="app" class="w-full max-w-6xl">
         <section id="login-screen" class="main-card p-10 max-w-md mx-auto">
-            <h2 class="text-xl font-bold uppercase text-center text-green-500 mb-6">Administración PRO</h2>
+            <h2 class="text-xl font-bold uppercase text-center text-green-500 mb-6 italic">ADMINISTRACION<span class="text-white">PRO</span></h2>
             <div class="space-y-4">
                 <input type="text" id="user-auth" class="input-field" placeholder="Usuario">
                 <input type="password" id="pass-auth" class="input-field" placeholder="Contraseña">
-                <button onclick="handleLogin()" class="w-full bg-action-button py-4 rounded-xl uppercase">Entrar</button>
+                <button onclick="handleLogin()" class="w-full bg-action-button py-4 rounded-xl uppercase tracking-widest">ENTRAR</button>
             </div>
+        </section>
+
+        <section id="setup-screen" class="hidden main-card p-10 max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold uppercase mb-8 border-b border-white/10 pb-4">Ajustes del Torneo</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label class="block text-slate-400 text-xs font-bold mb-2 uppercase">Número de Equipos</label>
+                    <input type="number" id="num-teams" value="16" class="input-field text-xl font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 text-xs font-bold mb-2 uppercase">Total de Rondas</label>
+                    <input type="number" id="num-rounds" value="3" class="input-field text-xl font-bold">
+                </div>
+            </div>
+            <button onclick="startTournament()" class="w-full bg-action-button py-5 rounded-2xl uppercase text-lg">CREAR TORNEO →</button>
         </section>
 
         <section id="main-screen" class="hidden space-y-6">
@@ -51,25 +77,25 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 main-card p-6 border-t-4 border-green-500">
-                    <h2 class="text-xl font-bold uppercase mb-6 italic">Cargar Ronda <span id="round-num-indicator">#1</span></h2>
-                    <div id="round-entry-list" class="space-y-3 mb-6 max-h-[500px] overflow-y-auto pr-2"></div>
-                    <button id="btn-save" onclick="processRound()" class="w-full bg-action-button py-4 rounded-xl uppercase">Confirmar y Guardar</button>
+                    <h2 class="text-xl font-bold uppercase mb-6 italic">CARGAR RONDA <span id="round-num-indicator" class="text-green-500">#1</span></h2>
+                    <div id="round-entry-list" class="space-y-3 mb-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                    <button id="btn-save" onclick="processRound()" class="w-full bg-action-button py-4 rounded-xl uppercase border-2 border-black">GUARDAR RONDA</button>
                 </div>
 
                 <div class="lg:col-span-8 main-card p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold uppercase italic">Tabla General</h2>
-                        <button onclick="copyTable()" class="bg-slate-800 text-xs px-5 py-2 rounded-full border border-slate-600">COPIAR RESULTADOS</button>
+                        <h2 class="text-2xl font-bold uppercase italic tracking-tighter">TABLA DE POSICIONES</h2>
+                        <button onclick="copyTable()" class="bg-slate-800 text-[10px] px-5 py-2 rounded-lg font-black border border-slate-600 uppercase">Copiar Resultados</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="text-slate-500 text-[10px] uppercase border-b border-slate-800">
                                 <tr>
-                                    <th class="pb-4">Pos</th>
-                                    <th class="pb-4">Equipo</th>
-                                    <th class="pb-4 text-center">Pts Posición</th>
-                                    <th class="pb-4 text-center">Kills</th>
-                                    <th class="pb-4 text-right">Total</th>
+                                    <th class="pb-4">#</th>
+                                    <th class="pb-4">EQUIPO</th>
+                                    <th class="pb-4 text-center">PTS POS</th>
+                                    <th class="pb-4 text-center">KILLS</th>
+                                    <th class="pb-4 text-right">TOTAL</th>
                                 </tr>
                             </thead>
                             <tbody id="leaderboard-body" class="divide-y divide-slate-800/50"></tbody>
@@ -77,60 +103,89 @@
                     </div>
                 </div>
             </div>
-            <div class="text-center">
-                <button onclick="confirmReset()" class="text-slate-600 hover:text-red-500 text-xs uppercase font-bold">🗑️ Reiniciar todo el sistema</button>
+            <div class="text-center pb-10">
+                <button onclick="confirmReset()" class="text-slate-600 hover:text-red-500 text-xs uppercase font-bold tracking-widest">🗑️ REINICIAR SISTEMA</button>
             </div>
         </section>
     </div>
 
     <script>
         const AUTH = { "vanny": "Y2lyY2xlMjAyNg==", "fabio": "bGNzMjAyNg==", "admin": "MTIzNA==" };
-        let tournament = { currentRound: 1, maxRounds: 3, isFinished: false, teams: [], pointsConfig: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1} };
+        let tournament = { 
+            currentRound: 1, 
+            maxRounds: 3, 
+            isFinished: false, 
+            teams: [], 
+            pointsConfig: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1} 
+        };
 
-        // SEGURIDAD: Cierra sesión al salir o refrescar
-        window.addEventListener('beforeunload', () => { sessionStorage.removeItem('activeSession'); });
+        // SEGURIDAD: Cierra sesión si se recarga o cierra
+        window.onbeforeunload = function() { sessionStorage.clear(); };
 
         function handleLogin() {
             const u = document.getElementById('user-auth').value.trim().toLowerCase();
             const p = document.getElementById('pass-auth').value.trim();
             if (AUTH[u] && atob(AUTH[u]) === p) {
-                sessionStorage.setItem('activeSession', 'true');
-                initTournament();
-                showScreen('main-screen');
+                sessionStorage.setItem('active', 'true');
+                showScreen('setup-screen');
             } else { alert("Credenciales inválidas"); }
         }
 
-        function initTournament() {
-            tournament.teams = Array.from({length: 16}, (_, i) => ({ id: i+1, name: `Team ${i+1}`, ptsPos: 0, ptsKill: 0, total: 0 }));
+        function startTournament() {
+            const nTeams = parseInt(document.getElementById('num-teams').value);
+            const nRounds = parseInt(document.getElementById('num-rounds').value);
+            
+            if(nTeams < 2) return alert("Mínimo 2 equipos");
+
+            tournament.maxRounds = nRounds;
+            tournament.teams = Array.from({length: nTeams}, (_, i) => ({
+                id: i+1,
+                name: `Team ${i+1}`,
+                ptsPos: 0,
+                ptsKill: 0,
+                total: 0
+            }));
+
+            showScreen('main-screen');
             renderRoundEntry();
             updateUI();
         }
 
         function renderRoundEntry() {
             const list = document.getElementById('round-entry-list');
+            if(tournament.isFinished) {
+                list.innerHTML = `<div class="p-4 bg-yellow-500/10 text-yellow-500 rounded-xl text-center font-bold">TORNEO FINALIZADO</div>`;
+                return;
+            }
             list.innerHTML = tournament.teams.map(t => `
                 <div class="flex items-center gap-2 bg-black/40 p-3 rounded-xl border border-white/5">
-                    <span class="flex-1 text-xs font-bold text-slate-300">${t.name}</span>
-                    <input type="number" placeholder="Pos" data-id="${t.id}" class="pos-in bg-slate-900 border border-slate-700 rounded-lg text-white text-center w-14 py-2 text-sm outline-none">
-                    <input type="number" placeholder="Kills" data-id="${t.id}" class="kills-in bg-slate-900 border border-slate-700 rounded-lg text-green-400 font-bold text-center w-14 py-2 text-sm outline-none">
+                    <span class="flex-1 text-xs font-bold text-slate-300 truncate">${t.name}</span>
+                    <input type="number" placeholder="Po" data-id="${t.id}" class="pos-in bg-slate-900 border border-slate-700 rounded-lg text-white text-center w-12 py-2 text-sm outline-none">
+                    <input type="number" placeholder="Kill" data-id="${t.id}" class="kills-in bg-slate-900 border border-slate-700 rounded-lg text-green-400 font-bold text-center w-12 py-2 text-sm outline-none">
                 </div>
             `).join('');
         }
 
         function processRound() {
-            // CORRECCIÓN: No permite acumular puntos si ya terminó
             if(tournament.isFinished) return;
 
             const posInputs = document.querySelectorAll('.pos-in');
             const killInputs = document.querySelectorAll('.kills-in');
             
+            // Validar que no haya posiciones duplicadas en la misma ronda
+            const checkSet = new Set();
+            for(let input of posInputs) {
+                if(input.value && checkSet.has(input.value)) return alert("Error: Posiciones duplicadas detectadas");
+                if(input.value) checkSet.add(input.value);
+            }
+
             posInputs.forEach((input, i) => {
                 const team = tournament.teams.find(t => t.id == input.dataset.id);
                 const pos = parseInt(input.value);
                 const kills = parseInt(killInputs[i].value || 0);
                 
                 if(pos) {
-                    team.ptsPos += tournament.pointsConfig[pos] || 1;
+                    team.ptsPos += tournament.pointsConfig[pos] || (pos <= 16 ? 1 : 0);
                     team.ptsKill += kills;
                     team.total = team.ptsPos + team.ptsKill;
                 }
@@ -143,8 +198,8 @@
                 tournament.isFinished = true;
                 document.getElementById('stat-status').textContent = "FINALIZADO";
                 document.getElementById('stat-status').classList.replace('text-green-400', 'text-yellow-500');
-                document.getElementById('btn-save').disabled = true;
-                document.getElementById('btn-save').classList.add('opacity-50');
+                document.getElementById('btn-save').style.display = "none";
+                renderRoundEntry();
             }
             updateUI();
         }
@@ -157,7 +212,7 @@
 
             document.getElementById('leaderboard-body').innerHTML = sorted.map((t, i) => `
                 <tr class="border-b border-white/5">
-                    <td class="py-4 font-black ${i===0?'text-yellow-400 text-lg':''}">${i+1}º</td>
+                    <td class="py-4 font-black text-green-500">${i+1}º</td>
                     <td class="py-4 font-bold text-slate-200">${t.name}</td>
                     <td class="py-4 text-center text-slate-400 font-bold">${t.ptsPos}</td>
                     <td class="py-4 text-center text-green-500 font-bold">${t.ptsKill}</td>
@@ -167,11 +222,19 @@
         }
 
         function showScreen(id) {
-            document.getElementById('login-screen').classList.add('hidden');
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function confirmReset() { if(confirm("¿Borrar todo?")) location.reload(); }
+        function confirmReset() { if(confirm("¿Deseas reiniciar todo el sistema?")) location.reload(); }
+
+        function copyTable() {
+            const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
+            let txt = "🏆 RESULTADOS PRO 🏆\n\n";
+            sorted.forEach((t, i) => txt += `${i+1}º ${t.name}: ${t.total} Pts\n`);
+            navigator.clipboard.writeText(txt);
+            alert("¡Copiado!");
+        }
     </script>
 </body>
 </html>
