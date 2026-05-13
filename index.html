@@ -9,63 +9,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
-        
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background-color: #020617; 
-            color: #f8fafc;
-            min-height: 100vh;
-            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 80%);
-        }
-
-        .glass-panel { 
-            background: rgba(15, 23, 42, 0.6); 
-            backdrop-filter: blur(12px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 24px;
-        }
-
-        .input-field {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            transition: all 0.3s;
-        }
-
-        .input-field:focus {
-            border-color: #10b981;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
-            outline: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #000;
-            font-weight: 800;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-primary:disabled {
-            background: #1e293b;
-            color: #475569;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
+        body { font-family: 'Outfit', sans-serif; background-color: #020617; color: #f8fafc; min-height: 100vh; background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 80%); }
+        .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
+        .input-field { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; padding: 0.75rem 1rem; transition: all 0.3s; }
+        .input-field:focus { border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); outline: none; }
+        .btn-primary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #000; font-weight: 800; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
@@ -75,16 +27,16 @@
         <div class="glass-panel p-10 w-full max-w-md animate-fade">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-black tracking-tighter italic">ADMINISTRACION<span class="text-green-500">PRO</span></h1>
-                <p class="text-slate-400 text-sm">Seguridad por Hash activada</p>
+                <p class="text-slate-400 text-sm">Protección por Hash SHA-256 activada</p>
             </div>
             <div class="space-y-4">
                 <div>
                     <label class="text-xs font-bold text-slate-500 uppercase ml-1">Usuario</label>
-                    <input type="text" id="user-auth" class="input-field w-full" placeholder="Ej: admin">
+                    <input type="text" id="user-auth" class="input-field w-full" placeholder="Usuario">
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-500 uppercase ml-1">Contraseña</label>
-                    <input type="password" id="pass-auth" class="input-field w-full" placeholder="••••">
+                    <input type="password" id="pass-auth" class="input-field w-full" placeholder="••••••••">
                 </div>
                 <button onclick="handleLogin()" class="btn-primary w-full py-4 rounded-xl mt-4 uppercase tracking-widest">Entrar</button>
             </div>
@@ -99,7 +51,6 @@
             </div>
             <button onclick="logout()" class="text-xs text-slate-500 hover:text-white uppercase font-bold">Salir</button>
         </div>
-
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="glass-panel p-6 border-l-4 border-green-500">
                 <h3 class="text-xl font-bold mb-6">🏆 Puntos</h3>
@@ -111,7 +62,6 @@
                     <div id="points-config-list" class="grid grid-cols-2 gap-2 h-64 overflow-y-auto custom-scrollbar pr-2 mt-4"></div>
                 </div>
             </div>
-
             <div class="lg:col-span-2 glass-panel p-8">
                 <h3 class="text-xl font-bold mb-6 italic">⚙️ Torneo</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -159,19 +109,15 @@
                 <p id="stat-status" class="text-sm font-black text-green-400 uppercase">En Vivo</p>
             </div>
         </div>
-
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-4 glass-panel p-6 h-fit">
                 <div class="flex justify-between items-end mb-6">
                     <h3 class="font-bold uppercase tracking-tighter">Puntaje <span id="round-title" class="text-green-500">#1</span></h3>
-                    <div class="flex gap-7 text-[9px] font-black text-slate-500 uppercase mr-1">
-                        <span>Pos</span><span>Kill</span>
-                    </div>
+                    <div class="flex gap-7 text-[9px] font-black text-slate-500 uppercase mr-1"><span>Pos</span><span>Kill</span></div>
                 </div>
                 <div id="round-entry-list" class="space-y-3 mb-6 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar"></div>
                 <button id="btn-process" onclick="processRound()" class="btn-primary w-full py-4 rounded-xl shadow-lg">CARGAR RONDA</button>
             </div>
-
             <div class="lg:col-span-8 glass-panel p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="font-bold uppercase tracking-tighter">Leaderboard</h3>
@@ -196,24 +142,20 @@
     </section>
 
     <div id="notification" class="fixed bottom-8 right-8 transform translate-y-32 opacity-0 transition-all duration-500 z-50">
-        <div id="notif-box" class="px-6 py-4 rounded-2xl shadow-2xl font-bold flex items-center gap-3"></div>
+        <div id="notif-box" class="px-6 py-4 rounded-2xl shadow-2xl font-bold"></div>
     </div>
 
     <script>
-        // CREDENCIALES CON HASH SHA-256 (SEGURAS)
+        // HASES VERIFICADOS PARA: 1234, lcs2026, circle2026
         const CREDENTIALS = [
-            { user: "admin", passHash: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4", org: "SISTEMA GLOBAL" }, 
-            { user: "Fabio", passHash: "1f6927d6d34e902f232491f09c687e14582f3473523588725838426f37651c6c", org: "OPEN LCS SCRIMS" }, 
-            { user: "Vanny", passHash: "7c0a7d4323c215d54a2e7c41df3c83095393433604f81c96765796f7e49221bc", org: "OPEN CIRCLE" }    
+            { user: "admin", passHash: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4", org: "SISTEMA GLOBAL" },
+            { user: "Fabio", passHash: "1f6927d6d34e902f232491f09c687e14582f3473523588725838426f37651c6c", org: "OPEN LCS SCRIMS" },
+            { user: "Vanny", passHash: "7c0a7d4323c215d54a2e7c41df3c83095393433604f81c96765796f7e49221bc", org: "OPEN CIRCLE" }
         ];
 
         let tournament = JSON.parse(sessionStorage.getItem('_pro_data')) || {
             config: { teams: 16, rounds: 3, ptsKill: 1, ptsPos: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1} },
-            currentRound: 1,
-            teams: [],
-            isFinished: false,
-            activeUser: null,
-            activeOrg: ""
+            currentRound: 1, teams: [], isFinished: false, activeUser: null
         };
 
         function handleLogin() {
@@ -221,11 +163,11 @@
             const pInput = document.getElementById('pass-auth').value.trim();
             
             if (typeof CryptoJS === 'undefined') {
-                alert("Error: Conéctate a internet para cargar el sistema de seguridad.");
-                return;
+                alert("Error: Revisa tu conexión a internet."); return;
             }
 
             const inputHash = CryptoJS.SHA256(pInput).toString();
+            // Comparamos usuario ignorando mayúsculas/minúsculas (.toLowerCase())
             const auth = CREDENTIALS.find(u => u.user.toLowerCase() === uInput.toLowerCase() && u.passHash === inputHash);
             
             if(auth) {
@@ -234,40 +176,20 @@
                 saveData();
                 document.getElementById('user-welcome').textContent = `ORG: ${auth.org}`;
                 if(tournament.teams.length > 0) {
-                    showScreen('main-screen');
-                    updateLeaderboard();
-                    renderRoundEntry();
-                } else {
-                    showScreen('setup-screen');
-                    initPointsConfig();
-                }
-            } else { 
-                notify("Credenciales incorrectas", "error"); 
-            }
+                    showScreen('main-screen'); updateLeaderboard(); renderRoundEntry();
+                } else { showScreen('setup-screen'); initPointsConfig(); }
+            } else { notify("Credenciales inválidas", "error"); }
         }
 
         function saveData() { sessionStorage.setItem('_pro_data', JSON.stringify(tournament)); }
-
-        function logout() {
-            if(confirm("¿Cerrar sesión? Los datos se borrarán.")) {
-                sessionStorage.removeItem('_pro_data');
-                location.reload();
-            }
-        }
-
-        function showScreen(id) {
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
+        function logout() { if(confirm("¿Salir?")) { sessionStorage.removeItem('_pro_data'); location.reload(); } }
+        function showScreen(id) { document.querySelectorAll('section').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
 
         function initPointsConfig() {
             const container = document.getElementById('points-config-list');
             container.innerHTML = '';
             for(let i=1; i<=25; i++) {
-                container.innerHTML += `<div class="flex items-center gap-2 bg-white/5 p-2 rounded">
-                    <span class="text-[10px] w-6">#${i}</span>
-                    <input type="number" class="pos-config-input input-field py-1 px-2 text-xs w-full" data-pos="${i}" value="${tournament.config.ptsPos[i] || 0}">
-                </div>`;
+                container.innerHTML += `<div class="flex items-center gap-2 bg-white/5 p-2 rounded"><span class="text-[10px] w-6">#${i}</span><input type="number" class="pos-config-input input-field py-1 px-2 text-xs w-full" data-pos="${i}" value="${tournament.config.ptsPos[i] || 0}"></div>`;
             }
         }
 
@@ -275,97 +197,55 @@
             tournament.config.teams = parseInt(document.getElementById('num-teams').value);
             tournament.config.rounds = parseInt(document.getElementById('num-rounds').value);
             tournament.config.ptsKill = parseInt(document.getElementById('pts-kill').value);
-            document.querySelectorAll('.pos-config-input').forEach(input => {
-                tournament.config.ptsPos[input.dataset.pos] = parseInt(input.value || 0);
-            });
-            const grid = document.getElementById('team-inputs-grid');
-            grid.innerHTML = '';
+            document.querySelectorAll('.pos-config-input').forEach(input => { tournament.config.ptsPos[input.dataset.pos] = parseInt(input.value || 0); });
+            const grid = document.getElementById('team-inputs-grid'); grid.innerHTML = '';
             for(let i=1; i <= tournament.config.teams; i++) {
-                grid.innerHTML += `<div class="relative"><span class="absolute left-3 top-2 text-[9px] font-black text-slate-500">SLOT ${i}</span>
-                    <input type="text" class="team-name-input input-field w-full pt-6 pb-2 font-bold" value="Team ${i}"></div>`;
+                grid.innerHTML += `<div class="relative"><span class="absolute left-3 top-2 text-[9px] font-black text-slate-500">SLOT ${i}</span><input type="text" class="team-name-input input-field w-full pt-6 pb-2 font-bold" value="Team ${i}"></div>`;
             }
             showScreen('names-screen');
         }
 
         function startTournament() {
             const names = document.querySelectorAll('.team-name-input');
-            tournament.teams = Array.from(names).map((n, idx) => ({
-                id: idx + 1, name: n.value || `Equipo ${idx + 1}`, ptsPos: 0, ptsKill: 0, total: 0
-            }));
-            saveData();
-            showScreen('main-screen');
-            updateLeaderboard();
-            renderRoundEntry();
+            tournament.teams = Array.from(names).map((n, idx) => ({ id: idx + 1, name: n.value || `Equipo ${idx + 1}`, ptsPos: 0, ptsKill: 0, total: 0 }));
+            saveData(); showScreen('main-screen'); updateLeaderboard(); renderRoundEntry();
         }
 
         function renderRoundEntry() {
             const container = document.getElementById('round-entry-list');
             const btn = document.getElementById('btn-process');
-            
-            if (tournament.isFinished) {
-                container.innerHTML = `<div class="text-center p-8 text-slate-500 font-bold uppercase italic border-2 border-dashed border-white/10 rounded-2xl">Torneo Finalizado</div>`;
-                btn.disabled = true;
-                btn.textContent = "FIN DEL TORNEO";
-                return;
-            }
-
+            if (tournament.isFinished) { container.innerHTML = `<div class="text-center p-8 text-slate-500 font-bold italic border-2 border-dashed border-white/10 rounded-2xl">Torneo Finalizado</div>`; btn.style.display = "none"; return; }
             container.innerHTML = tournament.teams.map(t => `
-                <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5">
-                    <span class="text-xs font-bold text-slate-500 w-4">${t.id}</span>
-                    <span class="flex-1 font-bold text-slate-200 truncate text-sm">${t.name}</span>
-                    <div class="flex gap-2">
-                        <input type="number" data-id="${t.id}" class="pos-in input-field w-12 py-1 px-0 text-center text-sm" placeholder="Pos">
-                        <input type="number" data-id="${t.id}" class="kill-in input-field w-12 py-1 px-0 text-center text-sm" placeholder="Kill">
-                    </div>
-                </div>
-            `).join('');
+                <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5"><span class="text-xs font-bold text-slate-500 w-4">${t.id}</span><span class="flex-1 font-bold text-slate-200 truncate text-sm">${t.name}</span>
+                <div class="flex gap-2"><input type="number" data-id="${t.id}" class="pos-in input-field w-12 py-1 px-0 text-center text-sm" placeholder="Pos"><input type="number" data-id="${t.id}" class="kill-in input-field w-12 py-1 px-0 text-center text-sm" placeholder="Kill"></div></div>`).join('');
         }
 
         function processRound() {
             if (tournament.isFinished) return;
-
             const posInputs = document.querySelectorAll('.pos-in');
             const killInputs = document.querySelectorAll('.kill-in');
             const maxTeams = tournament.config.teams;
-            
             let allFilled = true;
-            posInputs.forEach((input, i) => {
-                if (input.value.trim() === "" || killInputs[i].value.trim() === "") allFilled = false;
-            });
-
+            posInputs.forEach((input, i) => { if (input.value.trim() === "" || killInputs[i].value.trim() === "") allFilled = false; });
             if (!allFilled) { notify("Completa todos los campos", "error"); return; }
-
             let seenPos = new Set();
             let errorMsg = "";
             for (let input of posInputs) {
                 const p = parseInt(input.value);
-                if (p > maxTeams || p < 1) { errorMsg = `Posición ${p} inválida (Máx: ${maxTeams})`; break; }
-                if (seenPos.has(p)) { errorMsg = `La posición ${p} está repetida`; break; }
+                if (p > maxTeams || p < 1) { errorMsg = `Posición ${p} inválida (Max: ${maxTeams})`; break; }
+                if (seenPos.has(p)) { errorMsg = `Posición ${p} repetida`; break; }
                 seenPos.add(p);
             }
-
             if (errorMsg) { notify(errorMsg, "error"); return; }
-
             posInputs.forEach((input, i) => {
                 const p = parseInt(input.value);
                 const k = parseInt(killInputs[i].value || 0);
                 const team = tournament.teams.find(t => t.id == input.dataset.id);
-                team.ptsPos += tournament.config.ptsPos[p] || 0;
-                team.ptsKill += k * tournament.config.ptsKill;
-                team.total = team.ptsPos + team.ptsKill;
+                team.ptsPos += tournament.config.ptsPos[p] || 0; team.ptsKill += k * tournament.config.ptsKill; team.total = team.ptsPos + team.ptsKill;
             });
-
-            if (tournament.currentRound < tournament.config.rounds) {
-                tournament.currentRound++;
-                notify("Ronda guardada", "success");
-            } else {
-                tournament.isFinished = true;
-                notify("Torneo finalizado", "success");
-            }
-
-            saveData();
-            updateLeaderboard();
-            renderRoundEntry();
+            if (tournament.currentRound < tournament.config.rounds) { tournament.currentRound++; notify("Ronda guardada", "success"); }
+            else { tournament.isFinished = true; notify("Torneo finalizado", "success"); }
+            saveData(); updateLeaderboard(); renderRoundEntry();
         }
 
         function updateLeaderboard() {
@@ -374,59 +254,35 @@
             document.getElementById('round-title').textContent = `#${tournament.currentRound}`;
             document.getElementById('stat-leader').textContent = sorted[0]?.total > 0 ? sorted[0].name : "---";
             document.getElementById('stat-kills').textContent = tournament.teams.reduce((acc, t) => acc + t.ptsKill, 0);
-            
-            if (tournament.isFinished) {
-                const status = document.getElementById('stat-status');
-                status.textContent = "FINALIZADO";
-                status.className = "text-sm font-black text-red-500 uppercase";
-            }
-
-            document.getElementById('leaderboard-body').innerHTML = sorted.map((t, i) => `
-                <tr class="border-b border-white/5 hover:bg-white/5 transition">
-                    <td class="py-4 font-black ${i < 3 ? 'text-green-500' : 'text-slate-500'}">${i+1}º</td>
-                    <td class="py-4 font-bold text-slate-200">${t.name}</td>
-                    <td class="py-4 text-center text-slate-400">${t.ptsPos}</td>
-                    <td class="py-4 text-center text-slate-400">${t.ptsKill}</td>
-                    <td class="py-4 text-right font-black text-green-400 text-lg">${t.total}</td>
-                </tr>
-            `).join('');
+            if (tournament.isFinished) { const s = document.getElementById('stat-status'); s.textContent = "FINALIZADO"; s.className = "text-sm font-black text-red-500 uppercase"; }
+            document.getElementById('leaderboard-body').innerHTML = sorted.map((t, i) => `<tr class="border-b border-white/5 hover:bg-white/5 transition"><td class="py-4 font-black ${i < 3 ? 'text-green-500' : 'text-slate-500'}">${i+1}º</td><td class="py-4 font-bold text-slate-200">${t.name}</td><td class="py-4 text-center text-slate-400">${t.ptsPos}</td><td class="py-4 text-center text-slate-400">${t.ptsKill}</td><td class="py-4 text-right font-black text-green-400 text-lg">${t.total}</td></tr>`).join('');
         }
 
         function exportToExcel() {
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
-            const ws = XLSX.utils.json_to_sheet(sorted.map((t, i) => ({
-                Rank: i+1, Equipo: t.name, PuntosPos: t.ptsPos, PuntosKill: t.ptsKill, Total: t.total
-            })));
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Resultados");
-            XLSX.writeFile(wb, `Resultados_${tournament.activeOrg}.xlsx`);
+            const ws = XLSX.utils.json_to_sheet(sorted.map((t, i) => ({ Rank: i+1, Equipo: t.name, PuntosPos: t.ptsPos, PuntosKill: t.ptsKill, Total: t.total })));
+            const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Resultados"); XLSX.writeFile(wb, `Resultados_${tournament.activeOrg}.xlsx`);
         }
 
         function copyTable() {
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
             let text = `🏆 *RESULTADOS: ${tournament.activeOrg}* 🏆\n\n`;
             sorted.forEach((t, i) => { text += `${i+1}º | ${t.name} | ${t.total} PTS\n`; });
-            navigator.clipboard.writeText(text);
-            notify("Copiado al portapapeles", "success");
+            navigator.clipboard.writeText(text); notify("Copiado al portapapeles", "success");
         }
 
         function notify(msg, type) {
-            const box = document.getElementById('notification');
-            const inner = document.getElementById('notif-box');
+            const box = document.getElementById('notification'); const inner = document.getElementById('notif-box');
             inner.className = `px-6 py-4 rounded-2xl shadow-2xl font-bold ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
-            inner.innerHTML = msg;
-            box.classList.remove('translate-y-32', 'opacity-0');
+            inner.innerHTML = msg; box.classList.remove('translate-y-32', 'opacity-0');
             setTimeout(() => box.classList.add('translate-y-32', 'opacity-0'), 2500);
         }
 
         window.onload = () => {
             if(tournament.activeUser) {
                 document.getElementById('user-welcome').textContent = `ORG: ${tournament.activeOrg}`;
-                if(tournament.teams.length > 0) {
-                    showScreen('main-screen');
-                    updateLeaderboard();
-                    renderRoundEntry();
-                } else { showScreen('setup-screen'); initPointsConfig(); }
+                if(tournament.teams.length > 0) { showScreen('main-screen'); updateLeaderboard(); renderRoundEntry(); }
+                else { showScreen('setup-screen'); initPointsConfig(); }
             } else { showScreen('login-screen'); }
         }
     </script>
