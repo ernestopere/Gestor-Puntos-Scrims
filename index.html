@@ -39,7 +39,6 @@
             outline: none;
         }
 
-        
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
@@ -50,9 +49,15 @@
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #334155;
+            color: #64748b;
+            cursor: not-allowed;
         }
 
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
@@ -165,7 +170,7 @@
                     </div>
                 </div>
                 <div id="round-entry-list" class="space-y-3 mb-6 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar"></div>
-                <button onclick="processRound()" class="btn-primary w-full py-4 rounded-xl shadow-lg">CARGAR RONDA</button>
+                <button id="btn-process" onclick="processRound()" class="btn-primary w-full py-4 rounded-xl shadow-lg">CARGAR RONDA</button>
             </div>
 
             <div class="lg:col-span-8 glass-panel p-6">
@@ -202,7 +207,6 @@
             { user: "Vanny", pass: "circle2026", org: "OPEN CIRCLE" }
         ];
 
-    
         let tournament = JSON.parse(sessionStorage.getItem('_pro_data')) || {
             config: { teams: 16, rounds: 3, ptsKill: 1, ptsPos: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1, 9:1, 10:1, 11:1, 12:1, 13:1, 14:1, 15:1, 16:1} },
             currentRound: 1,
@@ -224,7 +228,7 @@
                 if(tournament.teams.length > 0) {
                     showScreen('main-screen');
                     updateLeaderboard();
-                    if(!tournament.isFinished) renderRoundEntry();
+                    renderRoundEntry();
                 } else {
                     showScreen('setup-screen');
                     initPointsConfig();
@@ -286,6 +290,15 @@
 
         function renderRoundEntry() {
             const container = document.getElementById('round-entry-list');
+            const btn = document.getElementById('btn-process');
+            
+            if (tournament.isFinished) {
+                container.innerHTML = `<div class="text-center p-8 text-slate-500 font-bold uppercase italic border-2 border-dashed border-white/5 rounded-2xl">Torneo Finalizado</div>`;
+                btn.disabled = true;
+                btn.textContent = "TORNEO COMPLETADO";
+                return;
+            }
+
             container.innerHTML = tournament.teams.map(t => `
                 <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5">
                     <span class="text-xs font-bold text-slate-500 w-4">${t.id}</span>
@@ -299,36 +312,59 @@
         }
 
         function processRound() {
+            if (tournament.isFinished) return;
+
             const posInputs = document.querySelectorAll('.pos-in');
             const killInputs = document.querySelectorAll('.kill-in');
-            let seenPos = new Set();
-            let valid = true;
+            
+            // 1. Validar campos vacíos
+            let allFilled = true;
+            posInputs.forEach((input, i) => {
+                if (input.value.trim() === "" || killInputs[i].value.trim() === "") allFilled = false;
+            });
 
+            if (!allFilled) {
+                notify("Error: Debes completar todos los campos", "error");
+                return;
+            }
+
+            // 2. Validar posiciones repetidas
+            let seenPos = new Set();
+            let duplicate = false;
+            posInputs.forEach(input => {
+                const p = parseInt(input.value);
+                if (seenPos.has(p)) duplicate = true;
+                seenPos.add(p);
+            });
+
+            if (duplicate) {
+                notify("Error: Hay posiciones repetidas", "error");
+                return;
+            }
+
+            // 3. Procesar puntos
             posInputs.forEach((input, i) => {
                 const p = parseInt(input.value);
                 const k = parseInt(killInputs[i].value || 0);
-                if(!isNaN(p)) {
-                    if(seenPos.has(p)) { notify(`Posición ${p} repetida`, "error"); valid = false; return; }
-                    seenPos.add(p);
-                    const team = tournament.teams.find(t => t.id == input.dataset.id);
-                    team.ptsPos += tournament.config.ptsPos[p] || 0;
-                    team.ptsKill += k * tournament.config.ptsKill;
-                    team.total = team.ptsPos + team.ptsKill;
-                }
+                const team = tournament.teams.find(t => t.id == input.dataset.id);
+                
+                team.ptsPos += tournament.config.ptsPos[p] || 0;
+                team.ptsKill += k * tournament.config.ptsKill;
+                team.total = team.ptsPos + team.ptsKill;
             });
 
-            if(!valid) return;
-            if(tournament.currentRound < tournament.config.rounds) {
+            // 4. Control de rondas y cierre
+            if (tournament.currentRound < tournament.config.rounds) {
                 tournament.currentRound++;
-                notify("Ronda cargada", "success");
-                renderRoundEntry();
+                notify("Ronda guardada correctamente", "success");
             } else {
                 tournament.isFinished = true;
-                document.getElementById('stat-status').textContent = "FINALIZADO";
-                notify("Torneo completado", "success");
+                notify("Torneo finalizado con éxito", "success");
             }
+
             saveData();
             updateLeaderboard();
+            renderRoundEntry();
         }
 
         function updateLeaderboard() {
@@ -338,6 +374,12 @@
             document.getElementById('stat-leader').textContent = sorted[0]?.total > 0 ? sorted[0].name : "---";
             document.getElementById('stat-kills').textContent = tournament.teams.reduce((acc, t) => acc + t.ptsKill, 0);
             
+            if (tournament.isFinished) {
+                const status = document.getElementById('stat-status');
+                status.textContent = "FINALIZADO";
+                status.classList.replace('text-green-400', 'text-red-500');
+            }
+
             document.getElementById('leaderboard-body').innerHTML = sorted.map((t, i) => `
                 <tr class="border-b border-white/5 hover:bg-white/5 transition">
                     <td class="py-4 font-black ${i < 3 ? 'text-green-500' : 'text-slate-500'}">${i+1}º</td>
@@ -356,12 +398,12 @@
             })));
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Resultados");
-            XLSX.writeFile(wb, `Resultados_${tournament.activeUser}.xlsx`);
+            XLSX.writeFile(wb, `Resultados_${tournament.activeOrg}.xlsx`);
         }
 
         function copyTable() {
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
-            let text = `🏆 *RESULTADOS* 🏆\n`;
+            let text = `🏆 *RESULTADOS: ${tournament.activeOrg}* 🏆\n\n`;
             sorted.forEach((t, i) => { text += `${i+1}º | ${t.name} | ${t.total} PTS\n`; });
             navigator.clipboard.writeText(text);
             notify("Copiado al portapapeles", "success");
@@ -382,7 +424,7 @@
                 if(tournament.teams.length > 0) {
                     showScreen('main-screen');
                     updateLeaderboard();
-                    if(!tournament.isFinished) renderRoundEntry();
+                    renderRoundEntry();
                 } else { showScreen('setup-screen'); initPointsConfig(); }
             } else { showScreen('login-screen'); }
         }
