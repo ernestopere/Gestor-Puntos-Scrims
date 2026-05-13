@@ -22,15 +22,9 @@
         .bg-action-button:hover { background-color: #059669; transform: scale(1.01); }
         .stat-box { background: rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 1.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
         
-        /* ELIMINAR FLECHAS DE LOS INPUTS NUMBER */
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
+        /* ELIMINAR FLECHAS */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
 
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -73,7 +67,6 @@
 
         <section id="roster-screen" class="hidden main-card p-10 max-w-4xl mx-auto">
             <h2 class="text-2xl font-bold uppercase mb-6 italic">REGISTRO DE EQUIPOS</h2>
-            <p class="text-slate-400 text-sm mb-6">⚠️ Todos los campos deben estar llenos para iniciar.</p>
             <div id="roster-inputs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar mb-8"></div>
             <div class="flex gap-4">
                 <button onclick="showScreen('setup-screen')" class="flex-1 bg-slate-800 py-4 rounded-xl font-bold uppercase text-xs">Atrás</button>
@@ -101,7 +94,7 @@
                 <div class="lg:col-span-4 main-card p-6 border-t-4 border-green-500">
                     <h2 class="text-xl font-bold uppercase mb-6 italic text-center">RONDA <span id="round-num-indicator" class="text-green-500">#1</span></h2>
                     <div id="round-entry-list" class="space-y-3 mb-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"></div>
-                    <button id="btn-save" onclick="processRound()" class="w-full bg-action-button py-4 rounded-xl uppercase shadow-lg shadow-green-500/20">CONFIRMAR RESULTADOS</button>
+                    <button id="btn-save" onclick="processRound()" class="w-full bg-action-button py-4 rounded-xl uppercase">CONFIRMAR RESULTADOS</button>
                 </div>
 
                 <div class="lg:col-span-8 main-card p-6">
@@ -139,7 +132,6 @@
         const AUTH = { "vanny": "Y2lyY2xlMjAyNg==", "fabio": "bGNzMjAyNg==", "admin": "MTIzNA==" };
         let tournament = { currentRound: 1, maxRounds: 3, isFinished: false, teams: [], pointsConfig: {1:15, 2:12, 3:10, 4:8, 5:6, 6:4, 7:2, 8:1} };
 
-        // Seguridad al cerrar pestaña
         window.onbeforeunload = () => { sessionStorage.clear(); };
 
         function handleLogin() {
@@ -169,13 +161,11 @@
             const nRounds = parseInt(document.getElementById('num-rounds').value);
             const nameInputs = document.querySelectorAll('.roster-name-input');
             let error = false;
-
             nameInputs.forEach(input => {
                 if(!input.value.trim()) { input.style.borderColor = "#ef4444"; error = true; }
                 else { input.style.borderColor = "rgba(255,255,255,0.1)"; }
             });
-
-            if(error) { alert("⚠️ Completa todos los nombres de los equipos."); return; }
+            if(error) { alert("⚠️ Completa todos los nombres."); return; }
 
             tournament.maxRounds = nRounds;
             tournament.currentRound = 1;
@@ -183,7 +173,6 @@
             tournament.teams = Array.from(nameInputs).map((input, i) => ({
                 id: i+1, name: input.value.trim(), ptsPos: 0, ptsKill: 0, total: 0
             }));
-
             showScreen('main-screen');
             renderRoundEntry();
             updateUI();
@@ -192,14 +181,16 @@
         function renderRoundEntry() {
             const list = document.getElementById('round-entry-list');
             if(tournament.isFinished) {
-                list.innerHTML = `<div class="p-8 text-center text-yellow-500 font-black border-2 border-dashed border-yellow-500/20 rounded-2xl">TORNEO FINALIZADO</div>`;
+                list.innerHTML = `<div class="p-8 text-center text-yellow-500 font-black border-2 border-dashed border-yellow-500/20 rounded-2xl uppercase">Torneo Finalizado</div>`;
                 return;
             }
             list.innerHTML = tournament.teams.map(t => `
-                <div class="flex items-center gap-2 bg-black/40 p-3 rounded-xl border border-white/5">
-                    <span class="flex-1 text-[11px] font-bold text-slate-300 truncate uppercase">${t.name}</span>
-                    <input type="number" placeholder="Pos" data-id="${t.id}" class="pos-in bg-slate-900 border border-slate-700 rounded-lg text-white text-center w-12 py-2 text-sm outline-none">
-                    <input type="number" placeholder="Kill" data-id="${t.id}" class="kills-in bg-slate-900 border border-slate-700 rounded-lg text-green-400 font-bold text-center w-12 py-2 text-sm outline-none">
+                <div class="flex flex-col gap-1 bg-black/40 p-3 rounded-xl border border-white/5">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">${t.name}</span>
+                    <div class="flex gap-2">
+                        <input type="number" placeholder="Posición" data-id="${t.id}" class="pos-in bg-slate-900 border border-slate-700 rounded-lg text-white text-center w-full py-2 text-sm outline-none">
+                        <input type="number" placeholder="Kills" data-id="${t.id}" class="kills-in bg-slate-900 border border-slate-700 rounded-lg text-green-400 font-bold text-center w-full py-2 text-sm outline-none">
+                    </div>
                 </div>`).join('');
         }
 
@@ -208,19 +199,51 @@
             const posInputs = document.querySelectorAll('.pos-in');
             const killInputs = document.querySelectorAll('.kills-in');
             
-            // Validar si hay posiciones duplicadas
-            const check = new Set();
-            for(let inp of posInputs) {
-                if(inp.value && check.has(inp.value)) return alert("Error: No puedes repetir posiciones.");
-                if(inp.value) check.add(inp.value);
+            let errorMsg = "";
+            const checkPos = new Set();
+
+            // VALIDACIONES DE PUNTOS
+            for(let i=0; i < posInputs.length; i++) {
+                const pVal = posInputs[i].value;
+                const kVal = killInputs[i].value;
+
+                // 1. Verificar si están vacíos
+                if(pVal === "" || kVal === "") {
+                    errorMsg = "⚠️ Todos los campos deben estar llenos (usa 0 si es necesario).";
+                    posInputs[i].style.borderColor = "#ef4444";
+                    killInputs[i].style.borderColor = "#ef4444";
+                } 
+                // 2. Verificar si son negativos
+                else if(parseInt(pVal) < 0 || parseInt(kVal) < 0) {
+                    errorMsg = "⚠️ No se aceptan números negativos.";
+                    posInputs[i].style.borderColor = "#ef4444";
+                    killInputs[i].style.borderColor = "#ef4444";
+                }
+                // 3. Verificar posiciones duplicadas
+                else if(pVal !== "0") {
+                    if(checkPos.has(pVal)) {
+                        errorMsg = "⚠️ No puedes repetir la misma posición en una ronda.";
+                    }
+                    checkPos.add(pVal);
+                }
             }
 
+            if(errorMsg) { alert(errorMsg); return; }
+
+            // Si todo está bien, procesar
             posInputs.forEach((input, i) => {
+                input.style.borderColor = "rgba(255,255,255,0.1)";
+                killInputs[i].style.borderColor = "rgba(255,255,255,0.1)";
+                
                 const team = tournament.teams.find(t => t.id == input.dataset.id);
                 const pos = parseInt(input.value);
-                const kills = parseInt(killInputs[i].value || 0);
-                if(pos) {
+                const kills = parseInt(killInputs[i].value);
+
+                if(pos > 0) {
                     team.ptsPos += tournament.pointsConfig[pos] || (pos <= 16 ? 1 : 0);
+                    team.ptsKill += kills;
+                    team.total = team.ptsPos + team.ptsKill;
+                } else {
                     team.ptsKill += kills;
                     team.total = team.ptsPos + team.ptsKill;
                 }
@@ -232,7 +255,6 @@
             } else {
                 tournament.isFinished = true;
                 document.getElementById('stat-status').textContent = "FINALIZADO";
-                document.getElementById('stat-status').className = "text-xl font-bold text-yellow-500 uppercase";
                 document.getElementById('btn-save').style.display = "none";
                 renderRoundEntry();
             }
@@ -241,7 +263,6 @@
 
         function updateUI() {
             document.getElementById('stat-round').textContent = `${tournament.currentRound}/${tournament.maxRounds}`;
-            document.getElementById('round-num-indicator').textContent = `#${tournament.currentRound}`;
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
             document.getElementById('stat-leader').textContent = sorted[0].total > 0 ? sorted[0].name : "---";
             document.getElementById('leaderboard-body').innerHTML = sorted.map((t, i) => `
@@ -259,11 +280,11 @@
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function confirmReset() { if(confirm("¿Seguro que deseas salir? Se perderán todos los datos.")) location.reload(); }
+        function confirmReset() { if(confirm("¿Seguro que deseas salir?")) location.reload(); }
 
         function copyTable() {
             const sorted = [...tournament.teams].sort((a,b) => b.total - a.total);
-            let txt = "🏆 OPEN PRO RANKING 🏆\n\n";
+            let txt = "🏆 RANKING PRO 🏆\n";
             sorted.forEach((t, i) => txt += `${i+1}º ${t.name}: ${t.total} Pts\n`);
             navigator.clipboard.writeText(txt);
             alert("Ranking copiado!");
