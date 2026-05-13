@@ -6,6 +6,7 @@
     <title>Open - Tournament Manager - PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
         
@@ -55,9 +56,10 @@
         }
 
         .btn-primary:disabled {
-            background: #334155;
-            color: #64748b;
+            background: #1e293b;
+            color: #475569;
             cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
@@ -76,7 +78,7 @@
         <div class="glass-panel p-10 w-full max-w-md animate-fade">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-black tracking-tighter italic">ADMINISTRACION<span class="text-green-500">PRO</span></h1>
-                <p class="text-slate-400 text-sm">Los datos se borrarán al cerrar la pestaña</p>
+                <p class="text-slate-400 text-sm">Protección por Hash SHA-256 activada</p>
             </div>
             <div class="space-y-4">
                 <div>
@@ -201,10 +203,11 @@
     </div>
 
     <script>
+    
         const CREDENTIALS = [
-            { user: "admin", pass: "1234", org: "SISTEMA GLOBAL" },
-            { user: "Fabio", pass: "lcs2026", org: "OPEN LCS SCRIMS" },
-            { user: "Vanny", pass: "circle2026", org: "OPEN CIRCLE" }
+            { user: "admin", passHash: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4", org: "SISTEMA GLOBAL" },
+            { user: "Fabio", passHash: "1f6927d6d34e902f232491f09c687e14582f3473523588725838426f37651c6c", org: "OPEN LCS SCRIMS" }, 
+            { user: "Vanny", passHash: "7c0a7d4323c215d54a2e7c41df3c83095393433604f81c96765796f7e49221bc", org: "OPEN CIRCLE" }    
         ];
 
         let tournament = JSON.parse(sessionStorage.getItem('_pro_data')) || {
@@ -218,7 +221,10 @@
         function handleLogin() {
             const uInput = document.getElementById('user-auth').value.trim();
             const pInput = document.getElementById('pass-auth').value;
-            const auth = CREDENTIALS.find(u => u.user === uInput && u.pass === pInput);
+            
+            // Convertimos lo que el usuario escribe a Hash para comparar
+            const inputHash = CryptoJS.SHA256(pInput).toString();
+            const auth = CREDENTIALS.find(u => u.user === uInput && u.passHash === inputHash);
             
             if(auth) {
                 tournament.activeUser = auth.user;
@@ -233,13 +239,13 @@
                     showScreen('setup-screen');
                     initPointsConfig();
                 }
-            } else { notify("Acceso denegado", "error"); }
+            } else { notify("Credenciales inválidas", "error"); }
         }
 
         function saveData() { sessionStorage.setItem('_pro_data', JSON.stringify(tournament)); }
 
         function logout() {
-            if(confirm("¿Cerrar sesión? Se perderán los datos actuales.")) {
+            if(confirm("¿Cerrar sesión?")) {
                 sessionStorage.removeItem('_pro_data');
                 location.reload();
             }
@@ -293,9 +299,9 @@
             const btn = document.getElementById('btn-process');
             
             if (tournament.isFinished) {
-                container.innerHTML = `<div class="text-center p-8 text-slate-500 font-bold uppercase italic border-2 border-dashed border-white/5 rounded-2xl">Torneo Finalizado</div>`;
+                container.innerHTML = `<div class="text-center p-8 text-slate-500 font-bold uppercase italic border-2 border-dashed border-white/10 rounded-2xl">Torneo Finalizado</div>`;
                 btn.disabled = true;
-                btn.textContent = "TORNEO COMPLETADO";
+                btn.textContent = "FIN DEL TORNEO";
                 return;
             }
 
@@ -316,50 +322,44 @@
 
             const posInputs = document.querySelectorAll('.pos-in');
             const killInputs = document.querySelectorAll('.kill-in');
+            const maxTeams = tournament.config.teams;
             
-            // 1. Validar campos vacíos
             let allFilled = true;
             posInputs.forEach((input, i) => {
                 if (input.value.trim() === "" || killInputs[i].value.trim() === "") allFilled = false;
             });
 
             if (!allFilled) {
-                notify("Error: Debes completar todos los campos", "error");
+                notify("Faltan campos por completar", "error");
                 return;
             }
 
-            // 2. Validar posiciones repetidas
             let seenPos = new Set();
-            let duplicate = false;
-            posInputs.forEach(input => {
+            let errorMsg = "";
+            for (let input of posInputs) {
                 const p = parseInt(input.value);
-                if (seenPos.has(p)) duplicate = true;
+                if (p > maxTeams || p < 1) { errorMsg = `Posición ${p} fuera de rango (Max: ${maxTeams})`; break; }
+                if (seenPos.has(p)) { errorMsg = `La posición ${p} está duplicada`; break; }
                 seenPos.add(p);
-            });
-
-            if (duplicate) {
-                notify("Error: Hay posiciones repetidas", "error");
-                return;
             }
 
-            // 3. Procesar puntos
+            if (errorMsg) { notify(errorMsg, "error"); return; }
+
             posInputs.forEach((input, i) => {
                 const p = parseInt(input.value);
                 const k = parseInt(killInputs[i].value || 0);
                 const team = tournament.teams.find(t => t.id == input.dataset.id);
-                
                 team.ptsPos += tournament.config.ptsPos[p] || 0;
                 team.ptsKill += k * tournament.config.ptsKill;
                 team.total = team.ptsPos + team.ptsKill;
             });
 
-            // 4. Control de rondas y cierre
             if (tournament.currentRound < tournament.config.rounds) {
                 tournament.currentRound++;
-                notify("Ronda guardada correctamente", "success");
+                notify("Ronda registrada", "success");
             } else {
                 tournament.isFinished = true;
-                notify("Torneo finalizado con éxito", "success");
+                notify("Torneo finalizado", "success");
             }
 
             saveData();
@@ -377,7 +377,7 @@
             if (tournament.isFinished) {
                 const status = document.getElementById('stat-status');
                 status.textContent = "FINALIZADO";
-                status.classList.replace('text-green-400', 'text-red-500');
+                status.className = "text-sm font-black text-red-500 uppercase";
             }
 
             document.getElementById('leaderboard-body').innerHTML = sorted.map((t, i) => `
